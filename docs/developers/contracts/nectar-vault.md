@@ -1,263 +1,330 @@
 ---
 title: NectarVault
-description: Full interface and reference for the NectarVault contract
+description: Full interface and reference for the NectarVault contract — deposits, withdrawals, share math, keeper draw/return accounting, and the cross-contract registry check.
 ---
 
 # NectarVault
 
-`NectarVault` custodies pooled USDC, mints / burns shares, and runs the draw / return cycle with keepers.
+`NectarVault` custodies the pooled USDC, accounts for depositor shares, and runs the keeper draw / return cycle. Depositors receive shares proportional to the current share price; keepers draw idle capital to fill Blend liquidation auctions and return it plus realized profit, which raises the share price for everyone.
 
-Source: [`contracts/vault/src/lib.rs`](https://github.com/Nectar-Network/nectar-poc/tree/main/contracts/vault/src) in the protocol repo.
+Source: [`contracts/nectar-vault/src/lib.rs`](https://github.com/Nectar-Network/nectar/tree/main/contracts/nectar-vault/src) in the protocol repo.
+
+:::info Deployed on testnet
+| Component | Address |
+|---|---|
+| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` |
+| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` |
+| USDC (mock SAC) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+
+Tranche 1 hardened deployment (2026-05-24), Soroban Testnet (`Test SDF Network ; September 2015`). On testnet, USDC is a mock Stellar Asset Contract; mainnet (Tranche 3) will use Circle USDC. All amounts are `i128` at 7-decimal precision — **1 USDC = 10,000,000 stroops**.
+:::
+
+## Concepts
+
+- **Shares.** A deposit mints shares. The first deposit mints 1:1 (`shares = amount`); every later deposit mints `amount * total_shares / total_usdc`. Integer division floors toward zero, so a depositor is never over-credited and existing holders are protected. There is no separate share token — shares live in the per-user `Depositor` record.
+- **Share price.** Implicitly `total_usdc / total_shares`. The contract never stores a price; `balance` and `withdraw` derive value on demand.
+- **`active_liq` (active liquidity).** USDC currently drawn by keepers and not yet returned. `available = total_usdc - active_liq` is what a new draw can pull.
+- **`total_profit`.** Cumulative realized profit booked from keeper returns. Profit is added to `total_usdc` (raising the share price) and tracked separately for reporting.
+- **Per-keeper draw.** Each keeper's outstanding drawn amount is tracked under `KeeperDraw(keeper)` so a return can compute profit and an off-chain keeper can cap a self-recovery at exactly what it owes.
 
 ## Public functions
 
 ### initialize
 
 ```rust
-fn initialize(
-    e: Env,
+pub fn initialize(
+    env: Env,
     admin: Address,
     usdc_token: Address,
     registry: Address,
     config: VaultConfig,
-)
+) -> Result<(), VaultError>
 ```
 
-One-shot. Reverts with `Error::AlreadyInit` if called twice. Sets `admin` (parameter tuning only — no upgrade authority on Tranche 1), the USDC SAC, and the authorized `KeeperRegistry` contract.
+**Auth:** none — first caller wins.
+
+One-shot. Reverts with `VaultError::AlreadyInit` if `Admin` is already set. Stores `admin` (parameter tuning via `set_config` only — there is no upgrade authority), the USDC token (`usdc_token`), the authorized `KeeperRegistry` address (`registry`), the `VaultConfig`, and a zeroed `VaultState` (`total_usdc`, `total_shares`, `total_profit`, `active_liq` all `0`).
 
 ### deposit
 
 ```rust
-fn deposit(e: Env, depositor: Address, amount: u128) -> Result<u128, Error>
+pub fn deposit(env: Env, user: Address, amount: i128) -> Result<i128, VaultError>
 ```
 
-**Auth:** `depositor` must sign.
+**Auth:** `user.require_auth()`.
 
-Pulls `amount` USDC from `depositor`, mints shares at the current price, and credits the depositor's record.
+Mints shares, pulls `amount` USDC from `user` into the vault, and credits the depositor's record. Share math:
 
-```
-shares_minted = if total_shares == 0 {
-    amount
+```rust
+let shares = if total_shares == 0 {
+    amount                                    // first deposit: 1:1
 } else {
-    amount * total_shares / total_assets
-}
+    amount * total_shares / total_usdc        // floors toward zero
+};
 ```
 
-Reverts if:
+The depositor's `last_deposit_time` is set to the current ledger timestamp, which **resets the withdrawal cooldown** — any new deposit restarts the timer for that account.
 
-- `paused == true` (`Error::Paused`)
-- `total_assets + amount > deposit_cap` (`Error::CapExceeded`)
-- `amount == 0` (`Error::ZeroAmount`)
+Reverts with `VaultError::NotInit` if the contract is not initialized, or `VaultError::DepositCapExceeded` when `deposit_cap > 0 && total_usdc + amount > deposit_cap` (the exact cap is allowed). Returns the number of shares minted. Emits the `deposit` event.
 
-Returns the number of shares minted. Emits `DepositEvent`.
+:::tip First deposit and tiny amounts
+A 1-stroop first deposit mints exactly 1 share, and a 10,000,000-USDC deposit mints exactly that many shares — there is no minimum deposit and no precision loss on the first deposit. After profit has accrued, later deposits mint fewer shares because the share price is above par.
+:::
 
-### request_withdraw
+### withdraw
 
 ```rust
-fn request_withdraw(e: Env, depositor: Address, shares: u128) -> Result<(), Error>
+pub fn withdraw(env: Env, user: Address, shares: i128) -> Result<i128, VaultError>
 ```
 
-**Auth:** `depositor` must sign.
+**Auth:** `user.require_auth()`.
 
-Escrows `shares` and records `claimable_at = current_ledger + cooldown_ledgers`. The depositor can have **at most one open request** at a time.
-
-Reverts with `Error::PendingWithdrawal` if a request already exists. Reverts with `Error::InsufficientShares` if the depositor doesn't hold `shares`.
-
-### claim_withdraw
+Burns `shares` from the depositor's balance and transfers proportional USDC (including accrued profit) back to `user`:
 
 ```rust
-fn claim_withdraw(e: Env, depositor: Address) -> Result<u128, Error>
+let usdc_out = shares * total_usdc / total_shares;  // floors toward zero
 ```
 
-**Auth:** `depositor` must sign.
+When the depositor holds all outstanding shares, this returns the full `total_usdc`. Decrements the depositor's shares and reduces `total_usdc` and `total_shares` accordingly.
 
-Reverts unless `current_ledger >= claimable_at`. Computes:
+Reverts with:
 
-```
-amount = escrowed_shares * total_assets / total_shares
-```
+- `VaultError::NoShares` — caller has no `Depositor` record
+- `VaultError::InsufficientBalance` — `shares > depositor.shares`
+- `VaultError::WithdrawalCooldown` — `now - last_deposit_time < withdraw_cooldown` (withdrawal is allowed exactly at `last_deposit_time + withdraw_cooldown`)
+- `VaultError::InsufficientVault` — `total_shares == 0`
 
-Burns the escrowed shares, transfers `amount` USDC to `depositor`, and clears the request. Returns the USDC amount paid.
+Returns the USDC paid out. Emits the `withdraw` event.
 
-Reverts with `Error::InsufficientLiquidity` if `total_assets - outstanding_draws < amount`.
+:::warning Withdrawing 0 shares is a no-op
+Calling `withdraw` with `shares = 0` succeeds, pays out 0, and leaves the balance unchanged. It does **not** error. Withdrawals can also fail at the token-transfer layer if the vault's free USDC (`total_usdc - active_liq`) is below `usdc_out` because capital is currently drawn — wait for keepers to return capital, then retry.
+:::
 
-### cancel_withdraw
+### balance
 
 ```rust
-fn cancel_withdraw(e: Env, depositor: Address) -> Result<(), Error>
+pub fn balance(env: Env, user: Address) -> (i128, i128)
 ```
 
-**Auth:** `depositor` must sign. Returns escrowed shares to the depositor's free balance and clears the request. No penalty.
+**Auth:** none (read-only view).
+
+Returns `(shares, usdc_value)` for `user`. Returns `(0, 0)` if there is no depositor record or no vault state, and `(shares, 0)` while `total_shares == 0`. Otherwise `usdc_value = shares * total_usdc / total_shares`.
 
 ### draw
 
 ```rust
-fn draw(e: Env, keeper: Address, amount: u128) -> Result<(), Error>
+pub fn draw(env: Env, keeper: Address, amount: i128) -> Result<(), VaultError>
 ```
 
-**Auth:** `keeper` must sign.
+**Auth:** `keeper.require_auth()`.
 
-1. Calls `KeeperRegistry::assert_active(keeper)`.
-2. Calls `KeeperRegistry::mark_draw(keeper, amount)`.
-3. Records the draw locally (`outstanding_draws[keeper] = amount`, `draw_started_at[keeper] = current_ledger`).
-4. Transfers `amount` USDC to `keeper`.
+A registered keeper draws idle capital to fund a liquidation. Steps:
 
-Reverts if `total_assets - sum(outstanding_draws) < amount` (`Error::InsufficientLiquidity`).
+1. Enforce the per-keeper draw limit: reverts `VaultError::DrawLimitExceeded` if `max_draw_per_keeper > 0 && amount > max_draw_per_keeper` (the exact limit is allowed). This is a **per-call** limit, not cumulative across draws.
+2. Compute `available = total_usdc - active_liq`; reverts `VaultError::InsufficientVault` if `amount > available`.
+3. Verify the keeper exists by cross-calling `KeeperRegistry::get_keeper(keeper)` (presence check — the return value is discarded). A non-registered keeper makes this sub-call fail.
+4. Transfer `amount` USDC from the vault to the keeper.
+5. Track the draw: `KeeperDraw(keeper) += amount`, and `active_liq += amount`.
+6. If `amount > 0`, call `KeeperRegistry::mark_draw(vault, keeper)` so the registry records an active draw (and starts the slash-timeout clock). A zero-amount draw skips the registry call.
+
+Emits the `draw` event.
+
+:::warning Draws while capital is outstanding
+`draw` checks `amount` against `max_draw_per_keeper` per call only — there is no on-chain cap on a keeper's *total* simultaneous outstanding draw inside the vault. Aggregate exposure is bounded by `available` (the vault can never lend out more than it holds) and by the registry's slash-on-timeout mechanic, which penalizes a keeper that draws and fails to return.
+:::
 
 ### return_proceeds
 
 ```rust
-fn return_proceeds(e: Env, keeper: Address, amount: u128) -> Result<(), Error>
+pub fn return_proceeds(
+    env: Env,
+    keeper: Address,
+    amount: i128,
+    response_time_ms: u64,
+) -> Result<(), VaultError>
 ```
 
-**Auth:** `keeper` must sign.
+**Auth:** `keeper.require_auth()`.
 
-Pulls `amount` USDC from the keeper. Then:
+The keeper returns capital (and any profit) after filling — or losing — an auction. `response_time_ms` is the keeper-observed draw-to-fill-to-return latency, forwarded to the registry to build the per-keeper average response-time metric.
+
+1. Transfer `amount` USDC from the keeper into the vault.
+2. Read the keeper's outstanding draw `drawn = KeeperDraw(keeper)` (0 if none).
+3. Repay active liquidity: `repay = min(amount, active_liq)`; apply `active_liq -= repay`.
+4. Compute profit:
 
 ```rust
-let principal = outstanding_draws[keeper];
-let keeper_fee_bps = config.keeper_fee_bps;
-if amount >= principal {
-    let profit = amount - principal;
-    let fee = profit * keeper_fee_bps / 10_000;
-    total_assets += profit - fee;
-    transfer(usdc, vault, keeper, fee);
-    KeeperRegistry::record_execution(keeper, profit - fee);
+let profit = if drawn > 0 && amount > drawn {
+    amount - drawn          // returned more than drawn → the excess is profit
+} else if drawn == 0 {
+    amount                  // no tracked draw → whole amount treated as donated profit
 } else {
-    let loss = principal - amount;
-    total_assets -= loss;
-    let recovered = KeeperRegistry::slash(keeper, loss);
-    if recovered < loss {
-        // residual is socialized via lower share price
-    }
-}
-KeeperRegistry::clear_draw(keeper, principal);
-outstanding_draws.remove(keeper);
+    0                       // returned <= drawn → no profit booked
+};
 ```
 
-Emits `ReturnEvent` (with `profit` or `loss`).
+5. Book profit: `total_usdc += profit`, `total_profit += profit`.
+6. If `drawn > 0`: remove the `KeeperDraw(keeper)` record, call `KeeperRegistry::clear_draw(vault, keeper)`, and call `KeeperRegistry::record_execution(vault, keeper, true, profit, response_time_ms)` to update the keeper's on-chain stats.
 
-### cancel_draw
+Emits the `return` event with `(amount, profit)`.
+
+:::info Partial returns and the no-draw case
+A return **at or below** the drawn amount (a partial recovery, e.g. an unprofitable fill) reduces `active_liq` by the returned amount but books **zero** profit. A return when no draw is tracked (`drawn == 0`) treats the entire amount as donated profit and does **not** touch the registry (no `clear_draw`/`record_execution`). The off-chain keeper uses [`get_keeper_draw`](#get_keeper_draw) to size a self-recovery so it returns exactly what it owes.
+:::
+
+### get_state
 
 ```rust
-fn cancel_draw(e: Env, keeper: Address) -> Result<(), Error>
+pub fn get_state(env: Env) -> Result<VaultState, VaultError>
 ```
 
-**Auth:** `keeper` must sign. Returns the principal without recording profit / loss / fee. Used when an auction race is lost (`auction_already_filled`). Reverts with `Error::NoOutstandingDraw` if the keeper has no in-flight draw.
+**Auth:** none (read-only). Returns the live `VaultState`; reverts `VaultError::NotInit` if uninitialized.
 
-### pause / unpause
+### get_config
 
 ```rust
-fn pause(e: Env)
-fn unpause(e: Env)
+pub fn get_config(env: Env) -> Result<VaultConfig, VaultError>
 ```
 
-**Auth:** admin only. Pause halts new deposits and new draws. Existing depositors can still request and claim withdrawals.
+**Auth:** none (read-only). Returns the current `VaultConfig`; reverts `VaultError::NotInit` if uninitialized.
 
-### update_config
+### set_config
 
 ```rust
-fn update_config(e: Env, config: VaultConfig)
+pub fn set_config(env: Env, admin: Address, config: VaultConfig) -> Result<(), VaultError>
 ```
 
-**Auth:** admin only. Replaces the entire config struct. There is no per-field setter.
+**Auth:** admin only. The stored admin is compared to `admin` **before** `admin.require_auth()` runs, so an intruder receives `VaultError::Unauthorized` even with auth mocked. Reverts `VaultError::NotInit` if uninitialized. Replaces the entire config struct — there is no per-field setter.
 
-### Read-only
+### get_depositor
 
 ```rust
-fn share_price(e: Env) -> u128                 // 7-decimal fixed point
-fn total_assets(e: Env) -> u128
-fn total_shares(e: Env) -> u128
-fn balance_of(e: Env, depositor: Address) -> u128
-fn position_value(e: Env, depositor: Address) -> u128
-fn outstanding_draw(e: Env, keeper: Address) -> u128
+pub fn get_depositor(env: Env, user: Address) -> Result<Depositor, VaultError>
 ```
+
+**Auth:** none (read-only). Returns the full `Depositor` record; reverts `VaultError::NoShares` if the user has never deposited.
+
+### get_keeper_draw
+
+```rust
+pub fn get_keeper_draw(env: Env, keeper: Address) -> i128
+```
+
+**Auth:** none (read-only). Returns the keeper's outstanding drawn-but-unreturned capital (`0` if none). The keeper daemon reads this each cycle to recover a stale draw: it caps the recovery return at this value so it never over-returns its own liquid balance.
+
+## Share math, caps, and cooldown
+
+- **Deposit shares.** First deposit `shares = amount`; thereafter `shares = amount * total_shares / total_usdc`, floored. After 100 USDC of profit on a 1000-share / 1100-USDC pool, a 1000-USDC deposit mints `1000_0000000 * 1000_0000000 / 1100_0000000` shares (share price 1.1).
+- **Withdraw payout.** `usdc_out = shares * total_usdc / total_shares`, floored. A full withdrawal returns the entire `total_usdc`. Across three equal withdrawers, total rounding dust is bounded to at most 3 stroops and the pool is never over-paid.
+- **Profit distribution.** Booking profit into `total_usdc` raises every share's value proportionally. Example: depositors split 1:2:3, then 60 USDC profit on a 600-USDC pool yields positions worth 110 / 220 / 330 USDC.
+- **Deposit cap.** Enforced only when `deposit_cap > 0`. Rejects when `total_usdc + amount > deposit_cap`; the exact cap is permitted.
+- **Withdrawal cooldown.** Enforced only when `withdraw_cooldown > 0` (a `0` cooldown always passes). Blocks while `now - last_deposit_time < withdraw_cooldown`; **any new deposit resets `last_deposit_time`** and therefore the cooldown.
+- **Per-keeper draw limit.** Enforced only when `max_draw_per_keeper > 0`. Rejects `amount > max_draw_per_keeper` per single `draw` call; the exact limit is permitted.
+
+The current testnet config (Tranche 1 hardened): `deposit_cap` = 10,000,000 USDC, `withdraw_cooldown` = 3600 s (1 h), `max_draw_per_keeper` = 10,000 USDC.
 
 ## Data structures
 
 ### VaultState
 
+Instance storage. Holds the running pool accounting.
+
 ```rust
 pub struct VaultState {
-    pub total_assets: u128,
-    pub total_shares: u128,
-    pub paused: bool,
+    pub total_usdc: i128,    // total pool assets (principal + booked profit), minus net withdrawals
+    pub total_shares: i128,  // total shares outstanding
+    pub total_profit: i128,  // cumulative realized profit booked from returns
+    pub active_liq: i128,    // capital currently drawn by keepers, not yet returned
 }
 ```
 
 ### Depositor
 
+Persistent storage, keyed by user address.
+
 ```rust
 pub struct Depositor {
-    pub shares: u128,
-    pub withdrawal_request: Option<WithdrawalRequest>,
-}
-
-pub struct WithdrawalRequest {
-    pub shares: u128,
-    pub claimable_at: u32,  // ledger
+    pub addr: Address,
+    pub shares: i128,
+    pub deposited_at: u64,        // first-deposit timestamp
+    pub last_deposit_time: u64,   // resets the withdrawal cooldown on every deposit
 }
 ```
 
 ### VaultConfig
 
+Instance storage. A `0` value disables the corresponding guard.
+
 ```rust
 pub struct VaultConfig {
-    pub deposit_cap: u128,           // hard cap on total_assets
-    pub min_deposit: u128,           // minimum deposit per call
-    pub cooldown_ledgers: u32,       // withdrawal cooldown
-    pub keeper_fee_bps: u32,         // share of profit paid to keeper, default 1000 (10%)
+    pub deposit_cap: i128,          // hard cap on total_usdc; 0 = unlimited
+    pub withdraw_cooldown: u64,     // seconds a depositor must wait after a deposit; 0 = none
+    pub max_draw_per_keeper: i128,  // max USDC per single draw call; 0 = unlimited
 }
 ```
 
-### Error
+### VaultKey
+
+Storage keys (`#[contracttype]` enum).
+
+| Key | Storage | Holds |
+|---|---|---|
+| `Admin` | instance | admin `Address` |
+| `Usdc` | instance | USDC token `Address` |
+| `State` | instance | `VaultState` |
+| `Depositor(Address)` | persistent | per-user `Depositor` |
+| `KeeperRegistry` | instance | authorized registry `Address` |
+| `VaultConfig` | instance | `VaultConfig` |
+| `KeeperDraw(Address)` | persistent | per-keeper outstanding draw (`i128`) |
+
+### VaultError
 
 ```rust
-pub enum Error {
+pub enum VaultError {
     AlreadyInit = 1,
     NotInit = 2,
-    NotAdmin = 3,
-    NotKeeper = 4,
-    NotRegistry = 5,
-    Paused = 10,
-    ZeroAmount = 11,
-    CapExceeded = 12,
-    BelowMinDeposit = 13,
-    InsufficientShares = 20,
-    InsufficientLiquidity = 21,
-    PendingWithdrawal = 22,
-    NotClaimable = 23,
-    NoOutstandingDraw = 30,
+    InsufficientBalance = 3,
+    InsufficientVault = 4,
+    Unauthorized = 5,
+    NoShares = 6,
+    // code 7 is intentionally unused
+    DepositCapExceeded = 8,
+    WithdrawalCooldown = 9,
+    DrawLimitExceeded = 10,
 }
 ```
 
-Full table on [Error Codes](../../reference/error-codes).
+Note: numeric code `7` is intentionally skipped — there is no variant with that code. Full table on [Error Codes](../../reference/error-codes).
 
 ## Events
 
-```rust
-DepositEvent      { depositor, amount, shares, share_price }
-WithdrawRequest   { depositor, shares, claimable_at }
-WithdrawClaim     { depositor, shares, amount }
-WithdrawCancel    { depositor, shares }
-DrawEvent         { keeper, amount, total_outstanding }
-ReturnEvent       { keeper, principal, returned, profit_or_loss }
-PauseEvent        { paused }
-ConfigEvent       { config }
-```
+| Topic | Topic data | Payload |
+|---|---|---|
+| `deposit` | user address | `(amount, shares)` |
+| `withdraw` | user address | `(shares, usdc_out)` |
+| `draw` | keeper address | `amount` |
+| `return` | keeper address | `(amount, profit)` |
 
 ## Cross-contract integration
 
-The vault calls into `KeeperRegistry` four times per cycle:
+The vault calls into `KeeperRegistry` during the draw / return cycle. On each call it passes its own contract address as the `caller`, which the registry validates against its stored `VaultAddr` via `require_vault`.
 
-1. `assert_active(keeper)` — `draw` entry gate
-2. `mark_draw(keeper, amount)` — increments registry's outstanding count
-3. `clear_draw(keeper, principal)` — on `return_proceeds` or `cancel_draw`
-4. `record_execution(keeper, profit)` or `slash(keeper, loss)` — on success / loss
+| When | Registry call | Purpose |
+|---|---|---|
+| `draw` (always) | `get_keeper(keeper)` | Verify the keeper is registered (presence check; return ignored) |
+| `draw` (when `amount > 0`) | `mark_draw(vault, keeper)` | Flag an active draw and start the slash-timeout clock |
+| `return_proceeds` (when a draw was tracked) | `clear_draw(vault, keeper)` | Clear the active-draw flag |
+| `return_proceeds` (when a draw was tracked) | `record_execution(vault, keeper, true, profit, response_time_ms)` | Record a successful fill, profit, and response time |
 
-Both contracts must be initialized with each other's address before any keeper activity.
+If a keeper draws and never returns, the registry's permissionless `slash` can be triggered once `slash_timeout` elapses; slashed stake is transferred to **this vault's address**, flowing back into the pool. See [KeeperRegistry](./keeper-registry) for the slashing rules.
 
-## Example: deposit via stellar CLI
+Both contracts must be initialized pointing at each other's address before any keeper activity: the vault is initialized with the registry address, and the registry with the vault address.
+
+## End-to-end cycle (verified)
+
+A full real-registry cycle — register (100 USDC stake pulled), deposit 1000, draw 500, return 510 (10 profit) — yields on the registry: `total_executions = 1`, `successful_fills = 1`, `total_profit = 10_0000000`, `response_count = 1`, `avg_response_time_ms = 175`; and on the vault: `active_liq = 0`, `total_profit = 10_0000000`, `total_usdc = 1010_0000000`.
+
+## Example: deposit via Stellar CLI
 
 ```bash
 stellar contract invoke \
@@ -266,18 +333,33 @@ stellar contract invoke \
   --network testnet \
   -- \
   deposit \
-  --depositor $DEPOSITOR_ADDRESS \
-  --amount 100_0000000   # 100 USDC, 7 decimals
+  --user $DEPOSITOR_ADDRESS \
+  --amount 100_0000000          # 100 USDC, 7 decimals
 ```
 
-## Example: query share price
+Returns the number of shares minted.
+
+## Example: read vault state
 
 ```bash
 stellar contract invoke \
   --id $VAULT_CONTRACT \
   --network testnet \
   -- \
-  share_price
+  get_state
 ```
 
-Returns a 7-decimal fixed-point integer. Divide by `10_000_000` for the human-readable price.
+Returns the `VaultState` struct. Divide any USDC field by `10_000_000` for the human-readable value, and compute the share price as `total_usdc / total_shares`.
+
+## Example: check a depositor's balance
+
+```bash
+stellar contract invoke \
+  --id $VAULT_CONTRACT \
+  --network testnet \
+  -- \
+  balance \
+  --user $DEPOSITOR_ADDRESS
+```
+
+Returns a 2-element tuple `[shares, usdc_value]`, both 7-decimal integers.

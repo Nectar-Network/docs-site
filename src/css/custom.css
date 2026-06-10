@@ -1,46 +1,202 @@
 /**
- * Nectar Network theme — amber/gold on dark.
+ * Nectar Network — documentation theme.
+ * Mirrors the app's "terminal" palette: mint accent on near-black,
+ * Syne display + DM Mono. Tuned so the site does not read as stock Docusaurus.
  */
 
+/* ── Light (clinical) ─────────────────────────────────────────────────────── */
 :root {
-  --ifm-color-primary: #f59e0b;
-  --ifm-color-primary-dark: #d97706;
-  --ifm-color-primary-darker: #b45309;
-  --ifm-color-primary-darkest: #92400e;
-  --ifm-color-primary-light: #fbbf24;
-  --ifm-color-primary-lighter: #fcd34d;
-  --ifm-color-primary-lightest: #fde68a;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-color-primary: hsl(160, 72%, 34%);
+  --ifm-color-primary-dark: hsl(160, 72%, 30%);
+  --ifm-color-primary-darker: hsl(160, 72%, 28%);
+  --ifm-color-primary-darkest: hsl(160, 72%, 22%);
+  --ifm-color-primary-light: hsl(160, 70%, 40%);
+  --ifm-color-primary-lighter: hsl(160, 70%, 44%);
+  --ifm-color-primary-lightest: hsl(160, 65%, 52%);
+
+  --ifm-background-color: hsl(220, 20%, 98%);
+  --ifm-background-surface-color: hsl(0, 0%, 100%);
+  --ifm-font-color-base: hsl(220, 22%, 16%);
+  --ifm-heading-color: hsl(220, 28%, 11%);
+  --ifm-color-emphasis-300: hsl(220, 14%, 82%);
+  --ifm-toc-border-color: hsl(220, 14%, 88%);
+  --nectar-border: hsl(220, 14%, 86%);
+  --nectar-grid: hsla(220, 14%, 50%, 0.07);
+
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --ifm-font-family-monospace: 'DM Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  --ifm-heading-font-family: 'Syne', var(--ifm-font-family-base);
+  --ifm-heading-font-weight: 700;
+
+  --ifm-code-font-size: 92%;
+  --ifm-code-border-radius: 4px;
+  --ifm-global-radius: 4px;
+  --ifm-navbar-shadow: none;
+  --ifm-color-info: hsl(200, 75%, 45%);
+  --ifm-color-success: hsl(160, 72%, 34%);
+  --ifm-color-warning: hsl(38, 92%, 45%);
+  --ifm-color-danger: hsl(0, 72%, 50%);
+  --docusaurus-highlighted-code-line-bg: hsla(160, 60%, 40%, 0.12);
 }
 
+/* ── Dark (terminal — the brand default) ──────────────────────────────────── */
 [data-theme='dark'] {
-  --ifm-background-color: #111827;
-  --ifm-background-surface-color: #1f2937;
-  --ifm-color-primary: #f59e0b;
-  --ifm-color-primary-dark: #d97706;
-  --ifm-color-primary-darker: #b45309;
-  --ifm-color-primary-darkest: #92400e;
-  --ifm-color-primary-light: #fbbf24;
-  --ifm-color-primary-lighter: #fcd34d;
-  --ifm-color-primary-lightest: #fde68a;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: hsl(160, 90%, 52%);
+  --ifm-color-primary-dark: hsl(160, 90%, 46%);
+  --ifm-color-primary-darker: hsl(160, 90%, 43%);
+  --ifm-color-primary-darkest: hsl(160, 90%, 35%);
+  --ifm-color-primary-light: hsl(160, 90%, 58%);
+  --ifm-color-primary-lighter: hsl(160, 88%, 63%);
+  --ifm-color-primary-lightest: hsl(160, 84%, 71%);
+
+  --ifm-background-color: hsl(220, 15%, 6%);
+  --ifm-background-surface-color: hsl(220, 12%, 10%);
+  --ifm-navbar-background-color: hsla(220, 16%, 7%, 0.85);
+  --ifm-footer-background-color: hsl(220, 18%, 5%);
+  --ifm-font-color-base: hsl(220, 20%, 78%);
+  --ifm-heading-color: hsl(220, 24%, 92%);
+  --ifm-color-emphasis-300: hsl(220, 15%, 22%);
+  --ifm-toc-border-color: hsl(220, 15%, 16%);
+  --nectar-border: hsl(220, 15%, 16%);
+  --nectar-grid: hsla(160, 30%, 60%, 0.045);
+
+  --ifm-color-info: hsl(200, 80%, 62%);
+  --ifm-color-success: hsl(160, 90%, 52%);
+  --ifm-color-warning: hsl(38, 95%, 58%);
+  --ifm-color-danger: hsl(0, 85%, 64%);
+  --docusaurus-highlighted-code-line-bg: hsla(160, 70%, 50%, 0.1);
 }
 
-[data-theme='dark'] .navbar {
-  background-color: #1f2937;
-  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+/* ── Typography ───────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+h1, h2, h3 {
+  letter-spacing: -0.018em;
+}
+.markdown h1:first-child {
+  font-size: 2.4rem;
+}
+::selection {
+  background: hsla(160, 90%, 52%, 0.25);
 }
 
-[data-theme='dark'] .footer--dark {
-  background-color: #0b1220;
-  --ifm-footer-background-color: #0b1220;
+/* ── Navbar ───────────────────────────────────────────────────────────────── */
+.navbar {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--nectar-border);
+}
+.navbar__title {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+}
+.navbar__link,
+.navbar__brand {
+  font-family: var(--ifm-font-family-monospace);
+}
+.navbar__link {
+  font-size: 0.86rem;
+}
+.navbar__items--right .navbar__link::before {
+  content: '↗';
+  opacity: 0.4;
+  margin-right: 0.3em;
+  font-size: 0.8em;
 }
 
-.hero {
-  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+/* ── Links & buttons ──────────────────────────────────────────────────────── */
+a {
+  text-underline-offset: 2px;
+}
+.button--primary {
+  --ifm-button-color: hsl(220, 30%, 6%);
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: 500;
+  border: none;
+}
+.button--secondary,
+.button--outline {
+  font-family: var(--ifm-font-family-monospace);
 }
 
-.button.button--primary {
-  --ifm-button-color: #111827;
+/* ── Code ─────────────────────────────────────────────────────────────────── */
+code {
+  font-family: var(--ifm-font-family-monospace);
+  border: 1px solid var(--nectar-border);
+  background: var(--ifm-background-surface-color);
+}
+.theme-code-block,
+pre code {
+  border-radius: var(--ifm-code-border-radius);
+}
+div[class^='codeBlockContainer'] {
+  border: 1px solid var(--nectar-border);
+  box-shadow: none;
+}
+
+/* ── Sidebar / TOC ────────────────────────────────────────────────────────── */
+.menu {
+  font-size: 0.9rem;
+}
+.menu__link {
+  font-family: var(--ifm-font-family-monospace);
+}
+.menu__link--active {
+  font-weight: 500;
+}
+.table-of-contents__link--active {
+  font-weight: 500;
+}
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--nectar-border) !important;
+}
+
+/* ── Admonitions: square the corners, mono titles ─────────────────────────── */
+.theme-admonition {
+  border-radius: var(--ifm-global-radius);
+  border-left-width: 3px;
+}
+.theme-admonition .admonitionHeading_node_modules-\@docusaurus,
+.theme-admonition h5 {
+  font-family: var(--ifm-font-family-monospace);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Tables ───────────────────────────────────────────────────────────────── */
+table {
+  font-size: 0.9rem;
+  display: table;
+  width: 100%;
+}
+table th {
+  font-family: var(--ifm-font-family-monospace);
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+.footer {
+  border-top: 1px solid var(--nectar-border);
+}
+.footer__title {
+  font-family: var(--ifm-font-family-monospace);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.8rem;
+  color: var(--ifm-color-primary);
+}
+.footer__link-item {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.85rem;
+}
+.footer__copyright {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.78rem;
+  opacity: 0.6;
 }

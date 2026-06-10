@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Nectar Network',
   tagline: 'Pooled Liquidation Protocol for Soroban DeFi',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   future: {
     v4: true,
@@ -17,11 +17,11 @@ const config: Config = {
   organizationName: 'Nectar-Network',
   projectName: 'docs-site',
 
-  onBrokenLinks: 'warn',
+  onBrokenLinks: 'throw',
 
   markdown: {
     hooks: {
-      onBrokenMarkdownLinks: 'warn',
+      onBrokenMarkdownLinks: 'throw',
     },
   },
 
@@ -30,13 +30,28 @@ const config: Config = {
     locales: ['en'],
   },
 
+  // Brand typefaces — Syne (display) + DM Mono (mono), matching the app.
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
+    },
+    {
+      tagName: 'link',
+      attributes: {rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous'},
+    },
+  ],
+  stylesheets: [
+    'https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap',
+  ],
+
   presets: [
     [
       'classic',
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/Nectar-Network/docs-site/tree/main/',
+          editUrl: 'https://github.com/Nectar-Network/docs-site/tree/docs-site/',
         },
         blog: false,
         theme: {
@@ -47,7 +62,11 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/social-card.png',
+    image: 'img/social-card.svg',
+    metadata: [
+      {name: 'description', content: 'Documentation for Nectar Network — a pooled liquidation protocol for Soroban DeFi on Stellar.'},
+      {name: 'theme-color', content: '#0d0e12'},
+    ],
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: true,
@@ -55,7 +74,7 @@ const config: Config = {
     navbar: {
       title: 'Nectar Network',
       logo: {
-        alt: 'Nectar Logo',
+        alt: 'Nectar Network',
         src: 'img/logo.svg',
       },
       items: [
@@ -71,7 +90,12 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://github.com/Nectar-Network/nectar-poc',
+          href: 'https://github.com/Nectar-Network/keeper-sdk',
+          label: 'Keeper SDK',
+          position: 'right',
+        },
+        {
+          href: 'https://github.com/Nectar-Network/nectar',
           label: 'GitHub',
           position: 'right',
         },
@@ -81,32 +105,37 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Documentation',
           items: [
             {label: 'Getting Started', to: '/docs/getting-started'},
             {label: 'Depositor Guide', to: '/docs/depositors/deposit-guide'},
-            {label: 'Operator Guide', to: '/docs/operators/setup'},
+            {label: 'Operator Setup', to: '/docs/operators/setup'},
+            {label: 'Architecture', to: '/docs/developers/architecture'},
           ],
         },
         {
-          title: 'Community',
+          title: 'Build',
           items: [
-            {label: 'Discord', href: 'https://discord.gg/stellar'},
-            {label: 'GitHub', href: 'https://github.com/Nectar-Network'},
+            {label: 'Keeper SDK', href: 'https://github.com/Nectar-Network/keeper-sdk'},
+            {label: 'Write an Adapter', to: '/docs/developers/adapter-guide'},
+            {label: 'Contract Addresses', to: '/docs/reference/contract-addresses'},
+            {label: 'Contributing', to: '/docs/developers/contributing'},
           ],
         },
         {
-          title: 'Links',
+          title: 'Network',
           items: [
             {label: 'App', href: 'https://nectarnetwork.fun'},
-            {label: 'Stellar Expert', href: 'https://stellar.expert'},
+            {label: 'GitHub', href: 'https://github.com/Nectar-Network'},
+            {label: 'Twitter', href: 'https://x.com/nectar_xlm'},
+            {label: 'Blend Protocol', href: 'https://blend.capital'},
           ],
         },
       ],
-      copyright: `© ${new Date().getFullYear()} 29projects Lab. MIT License.`,
+      copyright: `© ${new Date().getFullYear()} Nectar Network · 29projects Lab · Built on Stellar · MIT License`,
     },
     prism: {
-      theme: prismThemes.github,
+      theme: prismThemes.vsLight,
       darkTheme: prismThemes.dracula,
       additionalLanguages: ['bash', 'toml', 'go', 'rust', 'json'],
     },
