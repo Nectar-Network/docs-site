@@ -3,7 +3,7 @@
 Public docs for [Nectar Network](https://nectarnetwork.fun) — a pooled liquidation protocol for Soroban DeFi on Stellar.
 
 Production site: **https://docs.nectarnetwork.fun**
-Protocol repo: **https://github.com/Nectar-Network/nectar-poc**
+Protocol repo: **https://github.com/Nectar-Network/nectar**
 
 ## Local development
 
