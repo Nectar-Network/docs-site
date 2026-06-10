@@ -1,0 +1,46 @@
+/**
+ * Nectar Network theme — amber/gold on dark.
+ */
+
+:root {
+  --ifm-color-primary: #f59e0b;
+  --ifm-color-primary-dark: #d97706;
+  --ifm-color-primary-darker: #b45309;
+  --ifm-color-primary-darkest: #92400e;
+  --ifm-color-primary-light: #fbbf24;
+  --ifm-color-primary-lighter: #fcd34d;
+  --ifm-color-primary-lightest: #fde68a;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-background-color: #111827;
+  --ifm-background-surface-color: #1f2937;
+  --ifm-color-primary: #f59e0b;
+  --ifm-color-primary-dark: #d97706;
+  --ifm-color-primary-darker: #b45309;
+  --ifm-color-primary-darkest: #92400e;
+  --ifm-color-primary-light: #fbbf24;
+  --ifm-color-primary-lighter: #fcd34d;
+  --ifm-color-primary-lightest: #fde68a;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .navbar {
+  background-color: #1f2937;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+[data-theme='dark'] .footer--dark {
+  background-color: #0b1220;
+  --ifm-footer-background-color: #0b1220;
+}
+
+.hero {
+  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+}
+
+.button.button--primary {
+  --ifm-button-color: #111827;
+}
