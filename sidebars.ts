@@ -4,6 +4,7 @@ const sidebars: SidebarsConfig = {
   docs: [
     'getting-started',
     'how-it-works',
+    'whitepaper',
     'faq',
     {
       type: 'category',
