@@ -27,7 +27,7 @@ No. Tranche 1 (MVP) and Tranche 2 (testnet feature build) are complete and runni
 What's live on testnet today:
 
 - Hardened `NectarVault` and `KeeperRegistry` contracts (staking, slashing, deposit caps, withdrawal cooldowns).
-- Two registered keepers running the full Blend Dutch-auction loop.
+- Three registered keepers running the full Blend Dutch-auction loop.
 - DEX integration (Soroswap primary, Phoenix fallback) for swapping seized collateral back to USDC.
 - A DeFindex adapter and the public [keeper-sdk](./developers/keeper-sdk).
 - Dashboard v2 at [nectarnetwork.fun](https://nectarnetwork.fun) (APY chart, keeper leaderboard, liquidation feed, depositor analytics).

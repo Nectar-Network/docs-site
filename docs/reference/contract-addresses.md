@@ -68,12 +68,13 @@ These are testnet parameters chosen for fast iteration. Mainnet will use longer 
 
 ## Registered keepers
 
-Two keepers are registered on the current registry, each with 100 USDC staked plus 100 USDC of liquid balance reserved for transaction fees.
+Three keepers are registered on the current registry, each with 100 USDC staked plus liquid balance reserved for transaction fees.
 
 | Keeper | Account | Live endpoint |
 |--------|---------|---------------|
 | keeper-alpha | `GCC52N6U63PWM4GVUJK7T54W3X2GW2YKWOLZWN7TX7LMDU6LCOVZ3YVF` | `https://keeper-alpha-production.up.railway.app` |
 | keeper-beta | `GDQ7VA37AB7YRQ6CNNKFFWTR2QQ5Z232GPHX5U6IQCQFENTASBAV6DCV` | `https://keeper-beta-production.up.railway.app` |
+| keeper-gamma | `GA472SZPEXVDKEN7BAGJAFVBDB74G37GOAHYFWUPC4Q62DDPTAGIQQXT` | `https://keeper-gamma-production.up.railway.app` |
 
 The deploying admin (registry and vault owner) is:
 

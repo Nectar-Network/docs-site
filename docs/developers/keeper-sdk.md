@@ -326,26 +326,17 @@ Each example calls `sdk.LoadConfig()`, so all three are driven by the same envir
 
 ## Publishing and versioning status
 
-:::warning Pre-release — not yet tagged
-As of Tranche 2, the SDK is being published as a standalone repository. A **pull request is open against `Nectar-Network/keeper-sdk`** to land the extracted code. The module is **not yet tagged**, so `go get github.com/Nectar-Network/keeper-sdk` currently resolves to a pseudo-version (commit-based). Pin to a commit SHA until a tag exists.
+:::tip Published — `v0.1.0`
+As of Tranche 2, the SDK is published as a standalone public repository at [`github.com/Nectar-Network/keeper-sdk`](https://github.com/Nectar-Network/keeper-sdk) and tagged **`v0.1.0`**. Install a pinned version with:
+
+```bash
+go get github.com/Nectar-Network/keeper-sdk@v0.1.0
+```
 :::
 
-The release sequence is:
+The repository ships the full SDK (core `Keeper`/`Config`, the `ProtocolAdapter` interface, a Blend reference adapter, Soroswap/Phoenix DEX conversion, and Soroban/vault/registry clients), three runnable examples, and operator docs. CI enforces `gofmt`, `go build`, `go vet`, and `go test -race` on every push.
 
-1. The extraction PR merges into `Nectar-Network/keeper-sdk`'s default branch.
-2. A semantic-version tag is pushed:
-
-   ```bash
-   git tag v0.1.0 && git push origin main --tags
-   ```
-
-3. The **Go module proxy indexes the tag on the first `go get`** of that version — no separate publish step is required. After that:
-
-   ```bash
-   go get github.com/Nectar-Network/keeper-sdk@v0.1.0
-   ```
-
-Until `v1.0.0`, treat the public API as unstable: it may change between minor versions. Production deployments should pin an exact version (or commit) rather than tracking `latest`.
+Until `v1.0.0`, treat the public API as unstable: it may change between minor versions. Production deployments should pin an exact version (e.g. `@v0.1.0`) rather than tracking `latest`. The Go module proxy indexes a tag on the first `go get` of that version — no separate publish step is required.
 
 ## See also
 

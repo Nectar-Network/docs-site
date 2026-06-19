@@ -91,7 +91,7 @@ All monetary values on-chain are `i128` at 7-decimal (stroop) precision. To depo
 | `slash_timeout` | 3,600 s |
 | `slash_rate_bps` | 1,000 (10% of stake per slash) |
 
-Two keepers are registered and running on testnet (`keeper-alpha`, `keeper-beta`), each staking 100 USDC.
+Three keepers are registered and running on testnet (`keeper-alpha`, `keeper-beta`, `keeper-gamma`), each staking 100 USDC.
 
 ## Capital flow
 
