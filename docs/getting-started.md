@@ -11,7 +11,7 @@ Nectar Network is a pooled liquidation protocol for Soroban DeFi on Stellar. Dep
 There are no reward tokens, emissions, or lockups. Yield is simply the appreciation of a single LP share price, driven by real liquidation profit captured on-chain.
 
 :::info Current status — Testnet
-Nectar is deployed on **Stellar Testnet** and is in **Tranche 2** (DEX integration, multi-protocol adapter interface, Dashboard v2, public keeper SDK). Mainnet ships in Tranche 3 after security hardening and a Circle USDC cutover. The addresses below are the live, current testnet deployment (Tranche 1 hardened, 2026-05-24).
+Nectar is deployed on **Stellar Testnet** and is in **Tranche 2** (DEX integration, multi-protocol adapter interface, Dashboard v2, public keeper SDK). Mainnet ships in Tranche 3 after security hardening and a Circle mainnet USDC cutover. The addresses below are the live, current testnet deployment — a fresh, security-hardened (audit-prep) build now settling in Circle testnet USDC.
 :::
 
 ## The five-second mental model
@@ -37,7 +37,7 @@ If a keeper misbehaves — draws capital and fails to return it before the slash
 
 | Resource | Link |
 |----------|------|
-| App (Vercel) | [nectarnetwork.fun](https://nectarnetwork.fun) |
+| App (Vercel) | [testnet.nectar.monster](https://testnet.nectar.monster) |
 | GitHub | [Nectar-Network/nectar](https://github.com/Nectar-Network/nectar) |
 | Keeper SDK | [Nectar-Network/keeper-sdk](https://github.com/Nectar-Network/keeper-sdk) |
 | Twitter / X | [@nectar_xlm](https://x.com/nectar_xlm) |
@@ -53,16 +53,16 @@ These are the live contract IDs the app and keepers use today. Always confirm ag
 
 | Contract | Address |
 |----------|---------|
-| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` |
-| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` |
-| USDC (mock SAC) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| KeeperRegistry | `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD` |
+| NectarVault | `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` |
+| USDC (Circle testnet SAC) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 | Blend pool (testnet V2) | `CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF` |
 | Reflector oracle (Blend's) | `CAZOKR2Y5E2OSWSIBRVZMJ47RUTQPIGVWSAQ2UISGAVC46XKPGDG5PKI` |
 | Soroswap router (testnet) | `CCJUD55AG6W5HAI5LRVNKAE5WDP5XGZBUDS5WNTIVDU7O264UZZE7BRD` |
 | Admin (deployer) | `GATK27P6LOQBSXMVCYBBSKPUYKX5HVZ5AI4AAKF7UEYNKELSEBH53P7W` |
 
-:::warning USDC is a mock token on testnet
-The testnet USDC above is a **mock Stellar Asset Contract** (`name: "USD Coin"`, `symbol: "USDC"`, `decimals: 7`) minted by the deployer for testing. It is **not** Circle USDC and has no value. Mainnet (Tranche 3) will use the real Circle USDC issuer.
+:::info Testnet USDC is Circle testnet USDC
+The testnet USDC above is **Circle's official testnet USDC**, wrapped as a Stellar Asset Contract (issuer `USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5`, `decimals: 7`). You obtain it from the [Circle testnet faucet](https://faucet.circle.com) — it is not admin-minted. It is still test-only USDC with no real-world value. Mainnet (Tranche 3) uses Circle's mainnet USDC issuer.
 :::
 
 ### Network parameters
@@ -91,7 +91,7 @@ All monetary values on-chain are `i128` at 7-decimal (stroop) precision. To depo
 | `slash_timeout` | 3,600 s |
 | `slash_rate_bps` | 1,000 (10% of stake per slash) |
 
-Three keepers are registered and running on testnet (`keeper-alpha`, `keeper-beta`, `keeper-gamma`), each staking 100 USDC.
+On the current deployment, `keeper-alpha` is registered and running on testnet (`keeper_count = 1`), staking 100 USDC. `keeper-beta` and `keeper-gamma` re-register shortly, as more Circle testnet USDC is faucet-ed for their stakes.
 
 ## Capital flow
 
@@ -119,7 +119,7 @@ The frontend reads live state two ways: **read-only Soroban simulation** of the 
 
 | Tranche | Theme | Status |
 |---------|-------|--------|
-| Tranche 1 | MVP — staking, slashing, hardened share math, Blend adapter | Shipped to testnet (hardened 2026-05-24) |
+| Tranche 1 | MVP — staking, slashing, hardened share math, Blend adapter | Shipped to testnet (security-hardened) |
 | Tranche 2 | DEX integration, multi-protocol adapters, Dashboard v2, public keeper SDK | **In progress** |
 | Tranche 3 | Mainnet deploy + Circle USDC, oracle circuit breaker, Docker packaging, security hardening | Planned |
 

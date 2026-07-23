@@ -11,7 +11,7 @@ Nectar Network is a **pooled liquidation protocol** for Soroban DeFi on Stellar.
 This page is the developer's map of the whole system: the two on-chain contracts and the one cross-contract call that ties them together, the off-chain keeper's per-cycle loop, the adapter and DEX layers that make the keeper multi-protocol, the frontend, and the data flow that connects all of it.
 
 :::info Testnet, Tranche 2
-Everything described here is **live on Soroban Testnet** as of Tranche 2. The vault accepts a **mock USDC SAC** (no real-world value). Mainnet with Circle USDC, an oracle circuit breaker, and Docker packaging ship in Tranche 3. All monetary values are `i128` at **7-decimal precision**: 1 USDC = 10,000,000 stroops.
+Everything described here is **live on Soroban Testnet** on the current security-hardened build of the contracts. The vault accepts **Circle testnet USDC** (a Circle-issued SAC from the [Circle faucet](https://faucet.circle.com); test-only, no real-world value). Mainnet with Circle's mainnet USDC, an oracle circuit breaker, and Docker packaging ship in Tranche 3. All monetary values are `i128` at **7-decimal precision**: 1 USDC = 10,000,000 stroops.
 :::
 
 ## The three components
@@ -22,7 +22,7 @@ Nectar is a monorepo of three independently deployed components plus a public SD
 |---|---|---|---|
 | **Contracts** | Rust, Soroban SDK 22.x | Custody, share accounting, keeper registry, staking, slashing | Soroban Testnet |
 | **Keeper** | Go 1.24, `stellar/go` SDK | Stateless daemon: monitor Blend, fill auctions, draw/return capital | Railway |
-| **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind | Depositor + operator UI, live dashboards | Vercel ([nectarnetwork.fun](https://nectarnetwork.fun)) |
+| **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind | Depositor + operator UI, live dashboards | Vercel ([testnet.nectar.monster](https://testnet.nectar.monster)) |
 | **keeper-sdk** | Go 1.24 | Public framework so third parties can run their own keepers | `go get` (published Tranche 2) |
 
 The contracts are the source of truth. The keeper holds **no persistent state** — it reads everything it needs from chain each cycle and restarts safely. The frontend never holds funds; it reads on-chain state by read-only simulation and reads keeper telemetry over a REST/SSE API.
@@ -37,7 +37,7 @@ contracts/
   nectar-vault/      # USDC deposit pool, share accounting, keeper capital draws
 ```
 
-Two further contracts, `liquidation-lab` and `mock-token`, exist under `contracts/` for testing and for the mock USDC SAC; they are not part of the production capital path.
+Two further contracts, `liquidation-lab` and `mock-token`, exist under `contracts/` for testing (`mock-token` backs the USDC used in contract unit tests); they are not part of the production capital path. Note that testnet itself now settles in Circle testnet USDC, not `mock-token`.
 
 ### NectarVault
 
@@ -228,7 +228,7 @@ See [DEX Swaps](../operators/dex-swaps) and [Operator Configuration](../operator
 
 ## The frontend
 
-The Next.js 14 frontend (App Router, deployed on Vercel at [nectarnetwork.fun](https://nectarnetwork.fun)) is a thin read/write layer over the contracts and the keeper API. It holds no funds and runs no privileged keys.
+The Next.js 14 frontend (App Router, deployed on Vercel at [testnet.nectar.monster](https://testnet.nectar.monster)) is a thin read/write layer over the contracts and the keeper API. It holds no funds and runs no privileged keys.
 
 It reads from **two sources**:
 
@@ -285,13 +285,13 @@ The keeper's stale-draw recovery and the registry's permissionless `slash()` are
 
 ## Live testnet deployment
 
-These are the current (Tranche 1 hardened, redeployed 2026-05-24) addresses the keeper and frontend point at. The full table — including deprecated deployments — is in [Contract Addresses](../reference/contract-addresses).
+These are the current (security-hardened, audit-prep) addresses the keeper and frontend point at. The full table — including deprecated deployments — is in [Contract Addresses](../reference/contract-addresses).
 
 | Contract | Testnet address |
 |---|---|
-| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` |
-| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` |
-| USDC (mock SAC) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| KeeperRegistry | `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD` |
+| NectarVault | `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` |
+| USDC (Circle testnet SAC) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 | Blend pool (testnet V2) | `CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF` |
 | Reflector oracle | `CAZOKR2Y5E2OSWSIBRVZMJ47RUTQPIGVWSAQ2UISGAVC46XKPGDG5PKI` |
 | Soroswap router | `CCJUD55AG6W5HAI5LRVNKAE5WDP5XGZBUDS5WNTIVDU7O264UZZE7BRD` |
@@ -306,7 +306,7 @@ nectar/                       # this monorepo (Nectar-Network/nectar)
     keeper-registry/          #   registration, staking, slashing, performance
     nectar-vault/             #   deposit pool, share accounting, capital draws
     liquidation-lab/          #   test harness (not in production path)
-    mock-token/               #   mock USDC SAC for testnet
+    mock-token/               #   mock token used in contract tests
   keeper/                     # off-chain keeper daemon (Go)
     main.go  config.go        #   startup + cycle loop, env parsing
     adapters/                 #   ProtocolAdapter + blend/ and defindex/

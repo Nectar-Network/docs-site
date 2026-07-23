@@ -237,10 +237,10 @@ Set the environment and run it against testnet. The contract IDs below are the *
 export KEEPER_SECRET=S...   # your keeper's secret seed
 export KEEPER_NAME=my-keeper
 
-export REGISTRY_CONTRACT=CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB
-export VAULT_CONTRACT=CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345
+export REGISTRY_CONTRACT=CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD
+export VAULT_CONTRACT=CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR
 export BLEND_POOL=CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF
-export USDC_CONTRACT=CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW
+export USDC_CONTRACT=CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA
 
 # Optional: enable collateral → USDC swaps
 export SOROSWAP_ROUTER=CCJUD55AG6W5HAI5LRVNKAE5WDP5XGZBUDS5WNTIVDU7O264UZZE7BRD
@@ -248,8 +248,8 @@ export SOROSWAP_ROUTER=CCJUD55AG6W5HAI5LRVNKAE5WDP5XGZBUDS5WNTIVDU7O264UZZE7BRD
 go run .
 ```
 
-:::info USDC on testnet is a mock SAC
-On testnet, `USDC_CONTRACT` points at a mock Stellar Asset Contract (`name="USD Coin"`, `symbol="USDC"`, 7 decimals). Mainnet will use **Circle USDC** when the protocol launches there in Tranche 3.
+:::info USDC on testnet is Circle testnet USDC
+On testnet, `USDC_CONTRACT` points at **Circle's testnet USDC** — a Circle-issued Stellar Asset Contract (`name="USD Coin"`, `symbol="USDC"`, 7 decimals) from the [Circle faucet](https://faucet.circle.com). Mainnet will use **Circle's mainnet USDC** when the protocol launches there in Tranche 3.
 :::
 
 Your keeper must be **registered and staked** before the vault will honor its `draw` calls — the vault verifies each keeper against the registry. See [Staking](../operators/staking) and the [KeeperRegistry contract](./contracts/keeper-registry) for the on-chain flow.

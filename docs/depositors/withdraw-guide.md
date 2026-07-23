@@ -8,7 +8,7 @@ description: How to redeem your NectarVault shares for USDC — the 1-hour withd
 Withdrawing from the Nectar Vault means **burning your shares** in exchange for USDC. Because the vault accrues keeper profits over time, each share is generally worth slightly more USDC at withdrawal than it was at deposit. This guide explains exactly how the on-chain `withdraw` call works, the rules it enforces, and how to redeem through the app with Freighter.
 
 :::info Testnet today, mainnet later
-Nectar is currently live on **Soroban testnet** (Tranche 2). The USDC you withdraw is a mock Stellar Asset Contract (SAC) deployed for testing — it carries no real value. Mainnet deployment with Circle USDC is scheduled for Tranche 3. See [Contract Addresses](../reference/contract-addresses) for the current testnet deployment.
+Nectar is currently live on **Soroban testnet**. The USDC you withdraw is **Circle testnet USDC** (a Circle-issued Stellar Asset Contract from the [Circle faucet](https://faucet.circle.com)) — it carries no real value. Mainnet deployment with Circle's mainnet USDC is scheduled for Tranche 3. See [Contract Addresses](../reference/contract-addresses) for the current testnet deployment.
 :::
 
 ## What a withdrawal actually does

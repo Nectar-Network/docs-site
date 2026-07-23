@@ -245,24 +245,24 @@ See the [Configuration Reference](./configuration) for the full table and valida
 
 ### Current testnet values
 
-These are the **current** Tranche 1 hardened testnet contracts (deployed 2026-05-24). See [Contract Addresses](../reference/contract-addresses) for the authoritative list.
+These are the **current** security-hardened (audit-prep) testnet contracts. See [Contract Addresses](../reference/contract-addresses) for the authoritative list.
 
 | Variable | Current testnet value |
 |---|---|
-| `USDC_CONTRACT` | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| `USDC_CONTRACT` | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 | `SOROSWAP_ROUTER` | `CCJUD55AG6W5HAI5LRVNKAE5WDP5XGZBUDS5WNTIVDU7O264UZZE7BRD` |
 | `PHOENIX_ROUTER` | *(leave empty — no public testnet deployment)* |
 
 ```bash
 # Recommended testnet swap config: Soroswap only.
-export USDC_CONTRACT="CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW"
+export USDC_CONTRACT="CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
 export SOROSWAP_ROUTER="CCJUD55AG6W5HAI5LRVNKAE5WDP5XGZBUDS5WNTIVDU7O264UZZE7BRD"
 export SLIPPAGE_BPS="100"
 # PHOENIX_ROUTER intentionally unset
 ```
 
-:::info Testnet USDC is a mock SAC; mainnet will use Circle USDC
-On testnet, `USDC_CONTRACT` points at a **mock Stellar Asset Contract** (name "USD Coin", symbol "USDC", 7 decimals). In Tranche 3, mainnet keepers will set `USDC_CONTRACT` to **Circle USDC** and point `SOROSWAP_ROUTER` at the mainnet Soroswap router, alongside overriding `NETWORK_PASSPHRASE` and the RPC/Horizon endpoints.
+:::info Testnet USDC is Circle testnet USDC; mainnet uses Circle's mainnet USDC
+On testnet, `USDC_CONTRACT` points at **Circle's testnet USDC** — a Circle-issued Stellar Asset Contract (name "USD Coin", symbol "USDC", 7 decimals) from the [Circle faucet](https://faucet.circle.com). In Tranche 3, mainnet keepers will set `USDC_CONTRACT` to **Circle's mainnet USDC** and point `SOROSWAP_ROUTER` at the mainnet Soroswap router, alongside overriding `NETWORK_PASSPHRASE` and the RPC/Horizon endpoints.
 :::
 
 ## What happens if both DEXs are disabled

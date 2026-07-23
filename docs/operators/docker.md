@@ -55,10 +55,10 @@ The compose file reads the two keeper secrets from `KEEPER_A_SECRET` and `KEEPER
 KEEPER_A_SECRET=S...
 KEEPER_B_SECRET=S...
 
-# Current testnet (Tranche 1 hardened, 2026-05-24)
-REGISTRY_CONTRACT=CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB
-VAULT_CONTRACT=CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345
-USDC_CONTRACT=CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW
+# Current testnet (security-hardened deployment)
+REGISTRY_CONTRACT=CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD
+VAULT_CONTRACT=CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR
+USDC_CONTRACT=CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA
 BLEND_POOL=CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF
 
 # DEX (collateral → USDC after fills); Soroswap primary, Phoenix optional
@@ -221,7 +221,7 @@ curl -i https://keeper-alpha-production.up.railway.app/healthz
 curl    https://keeper-alpha-production.up.railway.app/api/performance
 ```
 
-Within a poll interval your keeper appears on the [dashboard leaderboard](https://nectarnetwork.fun/dashboard/keepers).
+Within a poll interval your keeper appears on the [dashboard leaderboard](https://testnet.nectar.monster/dashboard/keepers).
 
 ## Without Docker
 

@@ -29,18 +29,18 @@ The enums are defined in source and are authoritative:
 - NectarVault — `contracts/nectar-vault/src/types.rs` (`enum VaultError`)
 - LiquidationLab — `contracts/liquidation-lab/src/types.rs` (`enum LabError`)
 
-Contract addresses referenced below (testnet, Tranche 1 hardened — current):
+Contract addresses referenced below (testnet, current security-hardened deployment):
 
 | Contract | Address |
 | --- | --- |
-| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` |
-| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` |
+| KeeperRegistry | `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD` |
+| NectarVault | `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` |
 
 :::note 7-decimal amounts
 All USDC amounts in error conditions are denominated in stroops with 7-decimal
-precision: `1 USDC = 10_000_000` stroops. On testnet, USDC is a mock Stellar Asset
-Contract (`CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW`); mainnet will
-use Circle USDC (Tranche 3).
+precision: `1 USDC = 10_000_000` stroops. On testnet, USDC is Circle testnet USDC — a
+Circle-issued Stellar Asset Contract (`CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA`);
+mainnet will use Circle's mainnet USDC (Tranche 3).
 :::
 
 ---

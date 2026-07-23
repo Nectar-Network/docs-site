@@ -8,7 +8,7 @@ description: Step-by-step guide to depositing USDC into the Nectar vault with Fr
 This guide walks you through depositing USDC into the [NectarVault](../developers/contracts/nectar-vault) and receiving LP shares. Yield accrues as share price rises — there is no claim step.
 
 :::info Testnet only
-Nectar is currently deployed on **Stellar testnet**. The USDC here is a mock Stellar Asset Contract (SAC), not Circle USDC — it has no real-world value. Mainnet (with Circle USDC) ships in Tranche 3 after audit.
+Nectar is currently deployed on **Stellar testnet**. The USDC here is **Circle testnet USDC** (a Circle-issued Stellar Asset Contract) — real test-net USDC from the [Circle faucet](https://faucet.circle.com), but still test money with no real-world value. Mainnet (with Circle's mainnet USDC) ships in Tranche 3 after audit.
 :::
 
 You'll need three things: a Freighter wallet, testnet XLM (for transaction fees), and testnet USDC. The whole process takes about five minutes.
@@ -35,16 +35,17 @@ Friendbot creates the account with a 10,000 XLM balance. A deposit costs a fract
 
 ## 3. Get testnet USDC
 
-The vault accepts exactly one asset: the testnet USDC mock SAC at the address below.
+The vault accepts exactly one asset: the Circle testnet USDC SAC at the address below.
 
 | Field | Value |
 |-------|-------|
 | Symbol | `USDC` |
 | Name | `USD Coin` |
 | Decimals | 7 |
-| Contract (SAC) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| Contract (SAC) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
+| Issuer | `USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5` |
 
-This is a mintable mock token controlled by the deployer; it is **not** Circle USDC. To get a test balance, request USDC from the team in the project channels or ask the deployer to mint to your address — there is no public self-serve faucet for it yet. Once you hold a balance, it will appear in Freighter under **Assets** (you may need to add the asset by its contract address).
+This is **Circle's official testnet USDC**, not a Nectar mock token. To get a test balance, mint USDC to your address from the [Circle testnet faucet](https://faucet.circle.com) (select the Stellar network). Once you hold a balance, it will appear in Freighter under **Assets** (you may need to add the asset by its issuer or contract address).
 
 :::tip 7-decimal precision
 Every amount on Stellar is an integer at 7-decimal precision. **1 USDC = 10,000,000 stroops.** The app handles this conversion for you — you type dollars, it submits stroops — but it matters when you read raw contract values or events.
@@ -52,7 +53,7 @@ Every amount on Stellar is an integer at 7-decimal precision. **1 USDC = 10,000,
 
 ## 4. Connect to the vault
 
-Open [nectarnetwork.fun/vault](https://nectarnetwork.fun/vault), click **Connect Wallet**, choose **Freighter**, and approve the connection. Nectar also supports Albedo, xBull, Lobstr, Hana, and Rabet, but this guide uses Freighter.
+Open [testnet.nectar.monster/vault](https://testnet.nectar.monster/vault), click **Connect Wallet**, choose **Freighter**, and approve the connection. Nectar also supports Albedo, xBull, Lobstr, Hana, and Rabet, but this guide uses Freighter.
 
 Once connected, the **Vault Overview** panel reads live on-chain state via read-only simulation (no fee):
 
@@ -128,7 +129,7 @@ You can independently confirm your balance by simulating a read against the vaul
 
 ```bash
 stellar contract invoke \
-  --id CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345 \
+  --id CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR \
   --source YOUR_ACCOUNT \
   --network testnet \
   --send=no \
@@ -142,9 +143,9 @@ The result is a two-element array `[shares, usdc_value]`, both in 7-decimal stro
 
 There's no reward to claim and no lockup beyond the withdrawal cooldown. Your position value rises automatically as keepers return liquidation profit and the share price ticks up.
 
-- **Live position and share price:** [nectarnetwork.fun/vault](https://nectarnetwork.fun/vault)
-- **Per-depositor analytics:** [nectarnetwork.fun/dashboard/depositor](https://nectarnetwork.fun/dashboard/depositor) — look up any `G…` address
-- **APY chart and liquidation feed:** [nectarnetwork.fun/dashboard](https://nectarnetwork.fun/dashboard)
+- **Live position and share price:** [testnet.nectar.monster/vault](https://testnet.nectar.monster/vault)
+- **Per-depositor analytics:** [testnet.nectar.monster/dashboard/depositor](https://testnet.nectar.monster/dashboard/depositor) — look up any `G…` address
+- **APY chart and liquidation feed:** [testnet.nectar.monster/dashboard](https://testnet.nectar.monster/dashboard)
 
 :::tip
 APY is only annualized once the share-price series spans at least seven days; shorter windows show raw cumulative return labeled "not annualized." Quiet weeks can yield near zero — yield is bursty because it comes from liquidations, not lending interest.

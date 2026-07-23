@@ -11,7 +11,7 @@ Nectar separates two things that are usually entangled in a liquidation bot: **c
 All amounts are `i128` at **7-decimal precision** (Stellar native): `1 USDC = 10,000,000 stroops`. Integer division always floors toward zero, so neither depositors nor keepers can extract more than their proportional value — rounding dust accrues to the pool.
 
 :::info
-Nectar is currently deployed on Stellar **testnet** (Tranche 1 hardened, redeployed 2026-05-24). USDC there is a mock Stellar Asset Contract. Mainnet with Circle USDC ships in Tranche 3. Current addresses: [Contract Addresses](./reference/contract-addresses).
+Nectar is currently deployed on Stellar **testnet** on a fresh, security-hardened build of the contracts (audit-prep versions carrying a security-review pass — share-inflation defense, cumulative draw caps, slash→vault reconciliation, atomic `__constructor` init, and a vault pause switch; the external audit is upcoming, not yet complete). Testnet now settles in **Circle testnet USDC** (from the [Circle faucet](https://faucet.circle.com)), not a mock token. Mainnet with Circle's mainnet USDC ships in Tranche 3. Current addresses: [Contract Addresses](./reference/contract-addresses).
 :::
 
 ## The two layers
@@ -188,7 +188,7 @@ Each successful `record_execution` updates the keeper's on-chain `KeeperInfo`:
 - `total_executions += 1` (always, success or failure)
 - on success only: `successful_fills += 1`, `total_profit += profit`, and the response-time accumulators (`total_response_time_ms`, `response_count`)
 
-So a failed execution increments only the execution count — it never inflates profit or the response-time average. Derived metrics surfaced on the [keeper leaderboard](https://nectarnetwork.fun/dashboard/keepers):
+So a failed execution increments only the execution count — it never inflates profit or the response-time average. Derived metrics surfaced on the [keeper leaderboard](https://testnet.nectar.monster/dashboard/keepers):
 
 - **Win rate** = `successful_fills / total_executions` (shown as "—" with zero executions, never a fabricated 100%).
 - **Average response time** = `avg_response_time_ms(operator)` = `total_response_time_ms / response_count` (integer division; `0` if no successes).

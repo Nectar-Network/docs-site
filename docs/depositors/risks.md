@@ -19,11 +19,12 @@ depositors. Only deposit what you can afford to lose.
 :::
 
 :::warning Testnet phase (Tranche 2)
-As of the current tranche, Nectar runs on **Stellar testnet** with a **mock USDC
-token** (a Stellar Asset Contract, not Circle USDC). Testnet balances have no
-monetary value. Mainnet deployment with Circle USDC and production parameters is
-scheduled for Tranche 3. Do not treat testnet figures as a promise of mainnet
-behavior.
+As of the current tranche, Nectar runs on **Stellar testnet** settling in
+**Circle testnet USDC** (a Circle-issued Stellar Asset Contract from the
+[Circle faucet](https://faucet.circle.com)). Testnet balances have no
+monetary value. Mainnet deployment with Circle's mainnet USDC and production
+parameters is scheduled for Tranche 3. Do not treat testnet figures as a promise
+of mainnet behavior.
 :::
 
 ## 1. Smart-contract risk
@@ -32,8 +33,8 @@ The protocol is enforced by two Soroban contracts written in Rust:
 
 | Contract | Testnet address | Role |
 | --- | --- | --- |
-| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` | Holds deposited USDC, issues shares, lends capital to keepers |
-| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` | Registers keepers, holds stake, slashes on timeout |
+| NectarVault | `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` | Holds deposited USDC, issues shares, lends capital to keepers |
+| KeeperRegistry | `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD` | Registers keepers, holds stake, slashes on timeout |
 
 Smart contracts can contain bugs. A flaw in share accounting, the cross-contract
 draw path, or a dependency (the Blend pool, the USDC token contract, or a DEX

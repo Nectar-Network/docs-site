@@ -15,16 +15,16 @@ The low-level pool/auction/position logic is the `blend` package (`keeper/blend/
 
 ## Monitored pool (testnet)
 
-The keeper monitors a single Blend pool, set via the `BLEND_POOL` environment variable. The current Tranche-1-hardened testnet target is:
+The keeper monitors a single Blend pool, set via the `BLEND_POOL` environment variable. The current testnet target is:
 
 | Contract | Address |
 | --- | --- |
 | Blend pool (testnet V2) | `CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF` |
 | Reflector oracle (used by the pool) | `CAZOKR2Y5E2OSWSIBRVZMJ47RUTQPIGVWSAQ2UISGAVC46XKPGDG5PKI` |
-| USDC (mock SAC, settlement asset) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| USDC (Circle testnet SAC, settlement asset) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 
 :::note USDC on testnet vs. mainnet
-On testnet, USDC is a mock Stellar Asset Contract (SAC) with 7-decimal precision (`1 USDC = 10,000,000` stroops). Mainnet deployment (Tranche 3) switches the settlement asset to Circle USDC; the integration logic is identical because both expose the standard SAC interface.
+On testnet, USDC is Circle testnet USDC — a Circle-issued Stellar Asset Contract (SAC) with 7-decimal precision (`1 USDC = 10,000,000` stroops), from the [Circle faucet](https://faucet.circle.com). Mainnet deployment (Tranche 3) switches the settlement asset to Circle's mainnet USDC; the integration logic is identical because both expose the standard SAC interface.
 :::
 
 ## The three auction types

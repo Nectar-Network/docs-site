@@ -8,7 +8,7 @@ description: Definitions for every domain term used across the Nectar Network do
 Definitions for the terms used throughout these docs. Where a term maps to real on-chain or keeper code, the relevant function, struct, or parameter is named so you can trace it back to the source.
 
 :::info Conventions used below
-All USDC amounts are integers in **7-decimal precision** (see [stroop / 7-decimals](#stroop--7-decimals)). On testnet, USDC is a [mock SAC](#sac-stellar-asset-contract); mainnet (Tranche 3) will use Circle USDC. "Tranche 2" features (DEX routing, multi-protocol adapters, DeFindex) are live on testnet; "Tranche 3" features (oracle circuit breaker, mainnet) are planned.
+All USDC amounts are integers in **7-decimal precision** (see [stroop / 7-decimals](#stroop--7-decimals)). On testnet, USDC is [Circle testnet USDC](#sac-stellar-asset-contract) (a Circle-issued SAC); mainnet (Tranche 3) will use Circle's mainnet USDC. "Tranche 2" features (DEX routing, multi-protocol adapters, DeFindex) are live on testnet; "Tranche 3" features (oracle circuit breaker, mainnet) are planned.
 :::
 
 ---
@@ -28,7 +28,7 @@ pub struct VaultState {
 }
 ```
 
-Current testnet address: `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345`.
+Current testnet address: `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR`.
 
 See [contracts/nectar-vault](../developers/contracts/nectar-vault) for the full reference.
 
@@ -99,7 +99,7 @@ pub struct KeeperInfo {
 }
 ```
 
-Current testnet address: `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB`.
+Current testnet address: `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD`.
 
 See [contracts/keeper-registry](../developers/contracts/keeper-registry) for the full reference.
 
@@ -239,7 +239,7 @@ Contract and keeper code never see decimal USDC — every `amount`, `min_stake`,
 
 ### SAC (Stellar Asset Contract)
 
-The standard Soroban token contract wrapper for a Stellar asset, exposing the SEP-41 token interface (`transfer`, `balance`, …). Nectar's USDC, the vault's accounting token, and registry stakes are all denominated in a SAC. On **testnet** this is a **mock SAC** (admin-mintable, `name="USD Coin"`, `symbol="USDC"`, `decimals=7`) at `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW`. On **mainnet** (Tranche 3) this will be **Circle USDC**.
+The standard Soroban token contract wrapper for a Stellar asset, exposing the SEP-41 token interface (`transfer`, `balance`, …). Nectar's USDC, the vault's accounting token, and registry stakes are all denominated in a SAC. On **testnet** this is **Circle testnet USDC** — a Circle-issued SAC (`name="USD Coin"`, `symbol="USDC"`, `decimals=7`, issuer `USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5`) obtained from the [Circle faucet](https://faucet.circle.com), at `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA`. On **mainnet** (Tranche 3) this will be **Circle's mainnet USDC**.
 
 ### Reflector oracle
 

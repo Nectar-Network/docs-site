@@ -85,7 +85,7 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          href: 'https://nectarnetwork.fun',
+          href: 'https://testnet.nectar.monster',
           label: 'App',
           position: 'right',
         },
@@ -125,7 +125,7 @@ const config: Config = {
         {
           title: 'Network',
           items: [
-            {label: 'App', href: 'https://nectarnetwork.fun'},
+            {label: 'App', href: 'https://testnet.nectar.monster'},
             {label: 'GitHub', href: 'https://github.com/Nectar-Network'},
             {label: 'Twitter', href: 'https://x.com/nectar_xlm'},
             {label: 'Blend Protocol', href: 'https://blend.capital'},

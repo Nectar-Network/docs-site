@@ -5,10 +5,10 @@ description: Why keepers stake, how performance is tracked on-chain, when stake 
 
 # Staking & Slashing
 
-A keeper's stake is its skin in the game. To register, an operator locks USDC into the `KeeperRegistry` contract. That stake is what a draw timeout slashes against, so the protocol can punish a keeper that draws vault capital and never returns it. The same registry record also accumulates the keeper's performance — execution count, success rate, average response time — which feeds the [keeper leaderboard](https://nectarnetwork.fun/dashboard/keepers).
+A keeper's stake is its skin in the game. To register, an operator locks USDC into the `KeeperRegistry` contract. That stake is what a draw timeout slashes against, so the protocol can punish a keeper that draws vault capital and never returns it. The same registry record also accumulates the keeper's performance — execution count, success rate, average response time — which feeds the [keeper leaderboard](https://testnet.nectar.monster/dashboard/keepers).
 
 :::info
-On testnet, USDC is a mock Stellar Asset Contract (SAC). Mainnet will use Circle USDC, shipping in Tranche 3. All amounts are `i128` at 7-decimal precision: **1 USDC = 10,000,000 stroops**. So the testnet `min_stake` of 100 USDC is stored as `1000000000`.
+On testnet, USDC is Circle testnet USDC — a Circle-issued Stellar Asset Contract (SAC) from the [Circle faucet](https://faucet.circle.com). Mainnet will use Circle's mainnet USDC, shipping in Tranche 3. All amounts are `i128` at 7-decimal precision: **1 USDC = 10,000,000 stroops**. So the testnet `min_stake` of 100 USDC is stored as `1000000000`.
 :::
 
 ## Why stake at all
@@ -38,7 +38,7 @@ The keeper binary calls `register` for you on first run, so you normally never i
 
 ```bash
 stellar contract invoke \
-  --id CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB \
+  --id CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD \
   --source $KEEPER_SECRET \
   --network testnet \
   -- \
@@ -60,9 +60,9 @@ The registry is initialized with a `RegistryConfig`. These are the live testnet 
 | `min_stake` | 100 USDC | `1000000000` | USDC pulled on `register`; the full stake amount |
 | `slash_timeout` | 3600 s (1 hour) | — | A draw open longer than this becomes slashable |
 | `slash_rate_bps` | 1000 (10%) | — | Fraction of stake slashed per timeout |
-| `usdc_token` | mock SAC | — | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| `usdc_token` | Circle testnet USDC | — | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 
-The registry contract on testnet is `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB`. See the [contract reference](../developers/contracts/keeper-registry) for the full interface.
+The registry contract on testnet is `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD`. See the [contract reference](../developers/contracts/keeper-registry) for the full interface.
 
 :::note
 The stake is **fixed at `min_stake`** — the registry does not support topping up or staking a variable amount. The per-draw size limit is a separate setting, `max_draw_per_keeper` (10,000 USDC on testnet), enforced by the [NectarVault](../developers/contracts/nectar-vault) on each `draw`, not by your stake.
@@ -140,7 +140,7 @@ There is **no cooldown** on stake withdrawal — once no draw is open, `deregist
 
 ```bash
 stellar contract invoke \
-  --id CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB \
+  --id CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD \
   --source $KEEPER_SECRET \
   --network testnet \
   -- \
@@ -148,7 +148,7 @@ stellar contract invoke \
   --operator $KEEPER_ADDRESS
 ```
 
-You can also deregister from the **Keeper operator panel** on the [vault page](https://nectarnetwork.fun/vault) with a connected wallet.
+You can also deregister from the **Keeper operator panel** on the [vault page](https://testnet.nectar.monster/vault) with a connected wallet.
 
 :::warning
 After deregistering you are gone from the registry: your performance history (`successful_fills`, `total_profit`, response-time stats) is deleted with the record. Re-registering starts you over from a zeroed `KeeperInfo` and pulls a fresh `min_stake`.

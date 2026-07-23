@@ -18,13 +18,13 @@ The [NectarVault](./nectar-vault) contract treats `KeeperRegistry` as its source
 
 ## Deployed addresses (Testnet)
 
-These are the **current** Tranche-1-hardened testnet deployments. Always confirm against `wallets.md` in the main repo before scripting against them.
+These are the **current** security-hardened (audit-prep) testnet deployments. Always confirm against `wallets.md` in the main repo before scripting against them.
 
 | Entity | Address |
 | --- | --- |
-| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` |
-| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` |
-| USDC (mock SAC) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| KeeperRegistry | `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD` |
+| NectarVault | `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` |
+| USDC (Circle testnet SAC) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 | Admin (deployer) | `GATK27P6LOQBSXMVCYBBSKPUYKX5HVZ5AI4AAKF7UEYNKELSEBH53P7W` |
 
 Live registry configuration on this deployment:
@@ -34,10 +34,10 @@ Live registry configuration on this deployment:
 | `min_stake` | 100 USDC (`1_000_000_000` stroops) |
 | `slash_timeout` | 3600 s (1 hour) |
 | `slash_rate_bps` | 1000 (10%) |
-| `usdc_token` | the mock SAC above |
+| `usdc_token` | the Circle testnet USDC SAC above |
 
 :::note Testnet vs mainnet USDC
-On testnet, USDC is a mock Stellar Asset Contract (`name="USD Coin"`, `symbol="USDC"`, `decimals=7`) administered by the deployer. Mainnet (Tranche 3) will point `usdc_token` at the canonical Circle USDC issuer's SAC. The 7-decimal precision is identical in both environments.
+On testnet, USDC is **Circle's testnet USDC** — a Circle-issued Stellar Asset Contract (`name="USD Coin"`, `symbol="USDC"`, `decimals=7`, issuer `USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5`) from the [Circle faucet](https://faucet.circle.com). Mainnet (Tranche 3) will point `usdc_token` at Circle's mainnet USDC issuer SAC. The 7-decimal precision is identical in both environments.
 :::
 
 ## Data types
@@ -403,7 +403,7 @@ Read the live config on testnet:
 
 ```bash
 stellar contract invoke \
-  --id CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB \
+  --id CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD \
   --source $ADMIN_SECRET \
   --rpc-url https://soroban-testnet.stellar.org \
   --network-passphrase "Test SDF Network ; September 2015" \
@@ -414,7 +414,7 @@ Inspect a registered keeper:
 
 ```bash
 stellar contract invoke \
-  --id CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB \
+  --id CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD \
   --source $ADMIN_SECRET \
   --rpc-url https://soroban-testnet.stellar.org \
   --network-passphrase "Test SDF Network ; September 2015" \

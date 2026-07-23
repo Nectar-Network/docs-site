@@ -9,7 +9,7 @@ description: Honest answers about Nectar Network — what's live, how yield work
 Plain answers, no marketing. If something here contradicts the contracts, the contracts win — read [Risks](./depositors/risks) before depositing anything.
 
 :::info
-Nectar is on **Soroban testnet only**. All USDC on testnet is a mock Stellar Asset Contract, not real money. Mainnet (with Circle USDC) is scheduled for Tranche 3.
+Nectar is on **Soroban testnet only**. Testnet now settles in **Circle testnet USDC** (from the [Circle faucet](https://faucet.circle.com)) — real test-net USDC, but still test money with no real-world value. Mainnet (with Circle's mainnet USDC) is scheduled for Tranche 3.
 :::
 
 ## The basics
@@ -27,10 +27,10 @@ No. Tranche 1 (MVP) and Tranche 2 (testnet feature build) are complete and runni
 What's live on testnet today:
 
 - Hardened `NectarVault` and `KeeperRegistry` contracts (staking, slashing, deposit caps, withdrawal cooldowns).
-- Three registered keepers running the full Blend Dutch-auction loop.
+- `keeper-alpha` registered and running the full Blend Dutch-auction loop on the new deployment; `keeper-beta` and `keeper-gamma` re-register shortly as more Circle testnet USDC is faucet-ed for their stakes.
 - DEX integration (Soroswap primary, Phoenix fallback) for swapping seized collateral back to USDC.
 - A DeFindex adapter and the public [keeper-sdk](./developers/keeper-sdk).
-- Dashboard v2 at [nectarnetwork.fun](https://nectarnetwork.fun) (APY chart, keeper leaderboard, liquidation feed, depositor analytics).
+- Dashboard v2 at [testnet.nectar.monster](https://testnet.nectar.monster) (APY chart, keeper leaderboard, liquidation feed, depositor analytics).
 
 ### Is this a stablecoin savings account?
 
@@ -151,13 +151,13 @@ The keeper-vs-vault **profit split** is described inconsistently across older pr
 
 ### Where are the contract addresses?
 
-The current testnet addresses are on the [Contract Addresses](./reference/contract-addresses) reference page. The deployed contracts (Tranche 1 hardened, 2026-05-24) are:
+The current testnet addresses are on the [Contract Addresses](./reference/contract-addresses) reference page. The deployed contracts (current security-hardened testnet deployment) are:
 
 | Contract | Testnet address |
 |----------|-----------------|
-| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` |
-| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` |
-| USDC (mock SAC) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| KeeperRegistry | `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD` |
+| NectarVault | `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` |
+| USDC (Circle testnet SAC) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 | Blend pool (testnet V2) | `CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF` |
 
 Always confirm against the reference page before signing a transaction — earlier deployments are deprecated and must not be targeted.

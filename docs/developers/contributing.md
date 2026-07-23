@@ -30,7 +30,7 @@ buildable and tested.
 contracts/          # Soroban smart contracts (Rust, soroban-sdk 22.x)
   keeper-registry/  # Operator registration, staking, slashing, performance tracking
   nectar-vault/     # USDC deposit pool, share accounting, keeper capital draws
-  mock-token/       # Mock USDC SAC used on testnet and in tests
+  mock-token/       # Mock token used in contract tests (testnet USDC is Circle's)
   liquidation-lab/  # Test harness contract for end-to-end liquidation scenarios
 keeper/             # Off-chain keeper daemon (Go) — module github.com/nectar-network/keeper
   blend/            # Blend Protocol pool monitoring
@@ -242,15 +242,16 @@ var _ adapters.ProtocolAdapter = (*Adapter)(nil)
 
 ## Working against testnet
 
-The current Tranche-1-hardened testnet deployment (as of 2026-05-24) is the
-target for end-to-end work. USDC on testnet is a **mock SAC** (Stellar Asset
-Contract); mainnet will use Circle USDC in Tranche 3.
+The current security-hardened testnet deployment is the
+target for end-to-end work. USDC on testnet is **Circle testnet USDC** (a
+Circle-issued Stellar Asset Contract from the [Circle faucet](https://faucet.circle.com));
+mainnet will use Circle's mainnet USDC in Tranche 3.
 
 | Contract | Address |
 | --- | --- |
-| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` |
-| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` |
-| USDC (mock SAC) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| KeeperRegistry | `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD` |
+| NectarVault | `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` |
+| USDC (Circle testnet SAC) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 | Blend pool (testnet V2) | `CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF` |
 | Soroswap router (testnet) | `CCJUD55AG6W5HAI5LRVNKAE5WDP5XGZBUDS5WNTIVDU7O264UZZE7BRD` |
 

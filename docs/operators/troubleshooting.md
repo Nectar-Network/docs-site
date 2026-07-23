@@ -78,7 +78,7 @@ The registry returns one of these contract errors. The daemon maps `AlreadyRegis
 Registration pulls the stake (`min_stake`, currently **100 USDC**) from your operator account into the registry contract via a USDC `transfer`. If your account does not hold at least `min_stake` USDC, the inner token transfer fails and `register` reverts.
 
 :::warning Stake is a USDC transfer, not a deposit you top up later
-You must fund the keeper's Stellar account with USDC **before** first start. On testnet, USDC is a mock SAC (`CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW`, 7 decimals). 100 USDC = `1000000000` stroops.
+You must fund the keeper's Stellar account with USDC **before** first start. On testnet, USDC is Circle testnet USDC (`CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA`, 7 decimals), obtained from the [Circle faucet](https://faucet.circle.com). 100 USDC = `1000000000` stroops.
 :::
 
 Resolution:
@@ -86,7 +86,7 @@ Resolution:
 1. Confirm the account exists and holds USDC. With the Stellar CLI:
    ```bash
    stellar contract invoke \
-     --id CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW \
+     --id CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA \
      --source-account $KEEPER_SECRET \
      --rpc-url https://soroban-testnet.stellar.org:443 \
      --network-passphrase "Test SDF Network ; September 2015" \
@@ -199,7 +199,7 @@ The DEX layer raises three sentinel errors:
 
 | Error text | Meaning | Resolution |
 | --- | --- | --- |
-| `dex: USDC address not configured` | `USDC_CONTRACT` is empty | Set `USDC_CONTRACT` to the USDC token (testnet mock SAC `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW`). Without it, collateral cannot be valued or swapped. |
+| `dex: USDC address not configured` | `USDC_CONTRACT` is empty | Set `USDC_CONTRACT` to the USDC token (Circle testnet USDC `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA`). Without it, collateral cannot be valued or swapped. |
 | `dex: no swap route available` | No configured DEX could complete the swap | Set at least one of `SOROSWAP_ROUTER` / `PHOENIX_ROUTER`. On testnet, Soroswap router is `CCJUD55AG6W5HAI5LRVNKAE5WDP5XGZBUDS5WNTIVDU7O264UZZE7BRD`. The error appends each venue's failure, e.g. `(soroswap: empty quote; phoenix: …)`. |
 | `dex: quote below slippage floor` | The best quote was worse than the oracle-anchored floor | The keeper refuses to dump collateral at a bad price on **any** venue — a bad price is treated as a global decision, not a venue-specific one. Either widen `SLIPPAGE_BPS` (deliberately) or wait for liquidity/price to recover. |
 

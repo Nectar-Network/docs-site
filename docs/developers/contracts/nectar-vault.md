@@ -12,11 +12,11 @@ Source: [`contracts/nectar-vault/src/lib.rs`](https://github.com/Nectar-Network/
 :::info Deployed on testnet
 | Component | Address |
 |---|---|
-| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` |
-| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` |
-| USDC (mock SAC) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| NectarVault | `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` |
+| KeeperRegistry | `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD` |
+| USDC (Circle testnet SAC) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 
-Tranche 1 hardened deployment (2026-05-24), Soroban Testnet (`Test SDF Network ; September 2015`). On testnet, USDC is a mock Stellar Asset Contract; mainnet (Tranche 3) will use Circle USDC. All amounts are `i128` at 7-decimal precision — **1 USDC = 10,000,000 stroops**.
+Current security-hardened (audit-prep) deployment on Soroban Testnet (`Test SDF Network ; September 2015`). On testnet, USDC is Circle testnet USDC (a Circle-issued Stellar Asset Contract from the [Circle faucet](https://faucet.circle.com)); mainnet (Tranche 3) will use Circle's mainnet USDC. All amounts are `i128` at 7-decimal precision — **1 USDC = 10,000,000 stroops**.
 :::
 
 ## Concepts
@@ -221,7 +221,7 @@ pub fn get_keeper_draw(env: Env, keeper: Address) -> i128
 - **Withdrawal cooldown.** Enforced only when `withdraw_cooldown > 0` (a `0` cooldown always passes). Blocks while `now - last_deposit_time < withdraw_cooldown`; **any new deposit resets `last_deposit_time`** and therefore the cooldown.
 - **Per-keeper draw limit.** Enforced only when `max_draw_per_keeper > 0`. Rejects `amount > max_draw_per_keeper` per single `draw` call; the exact limit is permitted.
 
-The current testnet config (Tranche 1 hardened): `deposit_cap` = 10,000,000 USDC, `withdraw_cooldown` = 3600 s (1 h), `max_draw_per_keeper` = 10,000 USDC.
+The current testnet config: `deposit_cap` = 10,000,000 USDC, `withdraw_cooldown` = 3600 s (1 h), `max_draw_per_keeper` = 10,000 USDC.
 
 ## Data structures
 

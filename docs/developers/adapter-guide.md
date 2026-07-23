@@ -449,12 +449,12 @@ Current Tranche-2 testnet contracts your adapter and the keeper interact with:
 
 | Contract | Address |
 | --- | --- |
-| NectarVault | `CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` |
-| KeeperRegistry | `CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB` |
-| USDC (mock SAC, 7 decimals) | `CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW` |
+| NectarVault | `CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` |
+| KeeperRegistry | `CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD` |
+| USDC (Circle testnet SAC, 7 decimals) | `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA` |
 | Blend pool (testnet V2) | `CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF` |
 | Soroswap router | `CCJUD55AG6W5HAI5LRVNKAE5WDP5XGZBUDS5WNTIVDU7O264UZZE7BRD` |
 
 :::info Amounts are 7-decimal stroops
-Every USDC value in `Task`, `Result`, and the `VaultClient` is in stroops: 1 USDC = `10000000`. On testnet, USDC is a mock Stellar Asset Contract; on mainnet (Tranche 3) it will be Circle USDC. The vault's `max_draw_per_keeper` is 10,000 USDC on testnet.
+Every USDC value in `Task`, `Result`, and the `VaultClient` is in stroops: 1 USDC = `10000000`. On testnet, USDC is Circle testnet USDC (a Circle-issued Stellar Asset Contract); on mainnet (Tranche 3) it will be Circle's mainnet USDC. The vault's `max_draw_per_keeper` is 10,000 USDC on testnet.
 :::

@@ -6,7 +6,7 @@ description: The Nectar Network whitepaper — a pooled liquidation protocol for
 # Nectar Network Whitepaper
 
 :::info Status
-This document describes a protocol that is **live on Stellar testnet only** (Tranche 1 hardened, redeployed 2026-05-24). USDC on testnet is a mock Stellar Asset Contract with no real-world value. Nectar has **not been audited.** Mainnet with Circle USDC, an admin multisig, and an oracle circuit breaker are planned for Tranche 3 (~October 2026). Nothing here is investment advice. Build supported by the [Stellar Community Fund Build Award (SCF #42)](https://communityfund.stellar.org/), $75K.
+This document describes a protocol that is **live on Stellar testnet only**, on a fresh security-hardened build of the contracts (audit-prep versions). USDC on testnet is **Circle testnet USDC** (from the [Circle faucet](https://faucet.circle.com)) — test-only USDC with no real-world value. Nectar has **not been audited** — the external audit is upcoming. Mainnet with Circle's mainnet USDC, an admin multisig, and an oracle circuit breaker are planned for Tranche 3 (~October 2026). Nothing here is investment advice. Build supported by the [Stellar Community Fund Build Award (SCF #42)](https://communityfund.stellar.org/), $75K.
 :::
 
 ## Abstract
@@ -381,7 +381,7 @@ Today the protocol is live on testnet only, and a **single admin key — the dep
 | **Blend integrity** | Nectar fills Blend's auctions and trusts Blend's solvency and auction accounting. | Read-only pricing; the keeper only commits capital when the profitability gate clears. | Multi-protocol adapter layer reduces single-protocol dependence. |
 | **Oracle integrity** | Auction pricing and health factors use Blend's oracle (Reflector). A manipulated feed could mislead the gate. | `MIN_PROFIT` floor, oracle-anchored DEX slippage floor, admin `pause`. | **Oracle circuit breaker** (Tranche 3). |
 
-The protocol has **not been audited.** USDC on testnet is a mock SAC with no real-world value.
+The protocol has **not been audited** — the external audit is upcoming, though the current testnet contracts already carry an internal security-review pass. USDC on testnet is Circle testnet USDC with no real-world value.
 
 ### What is already decentralized
 
@@ -418,7 +418,7 @@ Nectar deliberately ships the trust-minimizing primitives first — staking, sla
 10. **Stellar Community Fund — Build Award (SCF #42).** The grant funding Nectar's development. [https://communityfund.stellar.org/](https://communityfund.stellar.org/)
 11. **Nectar Network monorepo.** Contracts, keeper, and frontend source. [https://github.com/Nectar-Network/nectar](https://github.com/Nectar-Network/nectar)
 12. **Nectar keeper-sdk.** Public Go SDK and `ProtocolAdapter` interface for third-party keeper operators. [https://github.com/Nectar-Network/keeper-sdk](https://github.com/Nectar-Network/keeper-sdk)
-13. **Nectar app.** [https://nectarnetwork.fun](https://nectarnetwork.fun)
+13. **Nectar app.** [https://testnet.nectar.monster](https://testnet.nectar.monster)
 14. **Nectar documentation.** [https://docs.nectarnetwork.fun](https://docs.nectarnetwork.fun)
 
 ---

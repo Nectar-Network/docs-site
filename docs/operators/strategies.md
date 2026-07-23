@@ -164,7 +164,7 @@ What this means for tuning:
 - **A higher `MIN_PROFIT` cedes contested fills.** If you require more margin, you wait later into the Dutch curve, where faster keepers have already filled. Conversely, a *lower* `MIN_PROFIT` lets you catch auctions other keepers skip.
 - **Don't run two keepers from one key.** They would contend for the same account sequence number and lose races to independent keepers. Use a distinct `KEEPER_SECRET` per instance.
 
-The registry tracks each keeper's `total_executions`, `successful_fills`, `total_profit`, and average response time (`avg_response_time_ms`), surfaced on the [keeper leaderboard](https://nectarnetwork.fun/dashboard/keepers). Only *successful* fills contribute to your profit and response-time stats; a lost race increments `total_executions` only.
+The registry tracks each keeper's `total_executions`, `successful_fills`, `total_profit`, and average response time (`avg_response_time_ms`), surfaced on the [keeper leaderboard](https://testnet.nectar.monster/dashboard/keepers). Only *successful* fills contribute to your profit and response-time stats; a lost race increments `total_executions` only.
 
 ## Multi-pool monitoring
 
@@ -254,7 +254,7 @@ export SLIPPAGE_BPS="100"
 ```
 
 :::warning No backtest harness ships with the keeper
-There is no `simulate` subcommand. Validate parameter changes against the live testnet pool (`./scripts/keeper-blend-testnet.sh`) and watch realized profit on the [dashboard](https://nectarnetwork.fun/dashboard/keepers) before committing to an aggressive configuration on mainnet.
+There is no `simulate` subcommand. Validate parameter changes against the live testnet pool (`./scripts/keeper-blend-testnet.sh`) and watch realized profit on the [dashboard](https://testnet.nectar.monster/dashboard/keepers) before committing to an aggressive configuration on mainnet.
 :::
 
 ## See also

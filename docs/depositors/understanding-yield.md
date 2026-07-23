@@ -131,19 +131,19 @@ Other honesty rules baked into the dashboard:
 
 ## Where to track it
 
-The canonical place to watch yield is **Dashboard v2** at [nectarnetwork.fun/dashboard](https://nectarnetwork.fun/dashboard):
+The canonical place to watch yield is **Dashboard v2** at [testnet.nectar.monster/dashboard](https://testnet.nectar.monster/dashboard):
 
 | What | Where |
 |------|-------|
-| Live share price, TVL, total profit, trailing APY | [Dashboard Overview](https://nectarnetwork.fun/dashboard) |
+| Live share price, TVL, total profit, trailing APY | [Dashboard Overview](https://testnet.nectar.monster/dashboard) |
 | Share-price chart with 30D / 90D toggle | Dashboard Overview → APY chart |
-| Per-fill realized profit history | [Liquidation Feed](https://nectarnetwork.fun/dashboard/liquidations) |
-| Your own position value over time | [Depositor Analytics](https://nectarnetwork.fun/dashboard/depositor) |
-| Deposit / withdraw and your live position | [nectarnetwork.fun/vault](https://nectarnetwork.fun/vault) |
+| Per-fill realized profit history | [Liquidation Feed](https://testnet.nectar.monster/dashboard/liquidations) |
+| Your own position value over time | [Depositor Analytics](https://testnet.nectar.monster/dashboard/depositor) |
+| Deposit / withdraw and your live position | [testnet.nectar.monster/vault](https://testnet.nectar.monster/vault) |
 
-The legacy [performance view](https://nectarnetwork.fun/performance) still works but predates Dashboard v2; prefer the dashboard.
+The legacy [performance view](https://testnet.nectar.monster/performance) still works but predates Dashboard v2; prefer the dashboard.
 
-**On-chain, directly:** the NectarVault contract (`CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345` on testnet, [stellar.expert](https://stellar.expert/explorer/testnet/contract/CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345)) is the source of truth:
+**On-chain, directly:** the NectarVault contract (`CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR` on testnet, [stellar.expert](https://stellar.expert/explorer/testnet/contract/CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR)) is the source of truth:
 
 - `get_state` returns `total_usdc`, `total_shares`, `total_profit`, `active_liq` — divide to compute share price yourself.
 - `balance(user)` returns your `(shares, usdc_value)`.
@@ -152,7 +152,7 @@ The legacy [performance view](https://nectarnetwork.fun/performance) still works
 All amounts in these calls and events are 7-decimal stroops; divide by `10,000,000` for USDC. See [Contract Addresses](../reference/contract-addresses) for the full address set and [Glossary](../reference/glossary) for the terms used here.
 
 :::info
-Today the vault holds a **mock USDC SAC** on Soroban testnet (`CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW`, 7 decimals). Mainnet (Tranche 3) will use **Circle USDC**.
+Today the vault holds **Circle testnet USDC** on Soroban testnet (`CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA`, 7 decimals, from the [Circle faucet](https://faucet.circle.com)). Mainnet (Tranche 3) will use **Circle's mainnet USDC**.
 :::
 
 ## Why yield is variable

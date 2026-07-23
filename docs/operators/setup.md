@@ -15,7 +15,7 @@ The keeper is the off-chain daemon in `keeper/` (Go). It self-registers on first
 
 - **Go 1.24+** ([install](https://go.dev/dl/)). The keeper module declares `go 1.24.0`.
 - A **Stellar keypair** (`S...` secret) dedicated to this keeper, funded with **XLM** for transaction fees.
-- **At least 200 USDC** on testnet in the keeper account: 100 USDC is locked as stake on registration, and you want margin left over to pay fees and act as the keeper's working float. On testnet this is a mock SAC; mainnet (Tranche 3) will use Circle USDC.
+- **At least 200 USDC** on testnet in the keeper account: 100 USDC is locked as stake on registration, and you want margin left over to pay fees and act as the keeper's working float. On testnet this is Circle testnet USDC (from the [Circle faucet](https://faucet.circle.com)); mainnet (Tranche 3) will use Circle's mainnet USDC.
 - An always-on machine or VPS — keepers race each other, so downtime means lost fills and, if a draw is left outstanding, slashing risk.
 
 :::warning Use a dedicated keypair
@@ -47,12 +47,12 @@ These four are **required** — a missing one prints `missing required env: <KEY
 ```bash
 export KEEPER_SECRET="S..."   # keeper Stellar secret key (signs all txs)
 export KEEPER_NAME="my-keeper"    # human-readable name, used at registration
-export REGISTRY_CONTRACT="CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB"
-export VAULT_CONTRACT="CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345"
+export REGISTRY_CONTRACT="CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD"
+export VAULT_CONTRACT="CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR"
 ```
 
 :::note KEEPER_NAME default
-`KEEPER_NAME` is technically optional — it defaults to `nectar-keeper-1`. Set it to something distinctive so your operator is identifiable on the [keeper leaderboard](https://nectarnetwork.fun/dashboard/keepers).
+`KEEPER_NAME` is technically optional — it defaults to `nectar-keeper-1`. Set it to something distinctive so your operator is identifiable on the [keeper leaderboard](https://testnet.nectar.monster/dashboard/keepers).
 :::
 
 To actually monitor for liquidations you also want the Blend pool and the network endpoints. These have testnet defaults, so the minimum useful testnet config adds just the pool:
@@ -62,7 +62,7 @@ To actually monitor for liquidations you also want the Blend pool and the networ
 export BLEND_POOL="CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF"
 
 # USDC token — required for collateral-swap proceeds and stale-draw recovery.
-export USDC_CONTRACT="CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW"
+export USDC_CONTRACT="CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
 ```
 
 The endpoints below default to testnet and only need to be set if you are overriding them:
@@ -92,22 +92,13 @@ Your keeper address needs both assets before it can register and operate.
   curl "https://friendbot.stellar.org/?addr=<YOUR_KEEPER_G_ADDRESS>"
   ```
 
-- **USDC** — at least the 100 USDC stake plus working margin. On testnet, mint the mock SAC. If you are the deployment admin, the repo's helper script mints `2 × min_stake` to each keeper before registering:
+- **USDC** — at least the 100 USDC stake plus working margin. On testnet this is **Circle testnet USDC**, which is faucet-issued (not admin-minted). Request it for your keeper's `G…` address from the [Circle testnet faucet](https://faucet.circle.com) (select the Stellar network). Once each keeper holds its stake, the repo's helper script registers them:
 
   ```bash
   ./scripts/register-keepers-testnet.sh
   ```
 
-  Otherwise, mint to your keeper address with the Stellar CLI (admin signs the mint; amounts are in 7-decimal stroops, so 200 USDC = `2000000000`):
-
-  ```bash
-  stellar contract invoke \
-    --id CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW \
-    --source <ADMIN_SECRET> \
-    --rpc-url https://soroban-testnet.stellar.org:443 \
-    --network-passphrase "Test SDF Network ; September 2015" \
-    -- mint --to <YOUR_KEEPER_G_ADDRESS> --amount 2000000000
-  ```
+  On-chain, amounts are in 7-decimal stroops (200 USDC = `2000000000`). Confirm the faucet balance lands before registering.
 
 :::warning Insufficient stake fails hard
 Registration transfers exactly `min_stake` (100 USDC) from your account into the registry. If your balance is below that, the token transfer panics inside the contract — it surfaces as a host error, not a typed `ContractError`, and your keeper is **not** registered. Confirm the balance lands before running.
@@ -168,14 +159,14 @@ nectar_sse_active 0
 
 ```bash
 stellar contract invoke \
-  --id CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB \
+  --id CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD \
   --source <YOUR_KEEPER_SECRET> \
   --rpc-url https://soroban-testnet.stellar.org:443 \
   --network-passphrase "Test SDF Network ; September 2015" \
   -- get_keeper --operator <YOUR_KEEPER_G_ADDRESS>
 ```
 
-**Dashboard** — your operator appears on the [keeper leaderboard](https://nectarnetwork.fun/dashboard/keepers) once the registry read picks it up. Execution count, win rate, average response time, and total profit populate as you complete fills.
+**Dashboard** — your operator appears on the [keeper leaderboard](https://testnet.nectar.monster/dashboard/keepers) once the registry read picks it up. Execution count, win rate, average response time, and total profit populate as you complete fills.
 
 :::tip Watch the live log
 Tail the event stream to see scans and fills as they happen:

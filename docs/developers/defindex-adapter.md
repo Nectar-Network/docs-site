@@ -157,8 +157,8 @@ A `.env` excerpt enabling DeFindex rebalancing on testnet:
 ```bash
 # Required for any keeper
 KEEPER_SECRET=S...
-REGISTRY_CONTRACT=CDT257SL2IYDZJIDXEVKI67MYLCKE73JY6WGUTGZOEFXJHG26FJHJDRB
-VAULT_CONTRACT=CDZR6VDCPQFOFFKKZ2KMVB67Z54LI5OY73NHBFVI6DR6RE6TL7NN7345
+REGISTRY_CONTRACT=CD33A7IGNCOLVQ4EEINBVMVA7IHWXGN57R6YLE5AJEEKPA6VKC2E4IQD
+VAULT_CONTRACT=CDOGQY7NAE3BP4Q7RWBCBLW23Z36RNWNDNXX5DWNIEVMFEWP3GVEPXLR
 
 # Enable the DeFindex adapter
 DEFINDEX_VAULT=C...          # the DeFindex vault to rebalance
@@ -166,7 +166,7 @@ DEFINDEX_DRIFT_BPS=500       # rebalance when any asset drifts >= 5%
 ```
 
 :::info Network addresses
-On testnet the Nectar contracts are the Tranche-1-hardened deployment above, and USDC is a mock Stellar Asset Contract (`CD34YC6FFI2KIE2U4ZPCGQIRPH7UPG5YY2QBYNP25ATSFOQSG73J4VBW`). Mainnet (Tranche 3) will use Circle USDC. The DeFindex vault address is operator-supplied — Nectar does not deploy or own it.
+On testnet the Nectar contracts are the current security-hardened deployment above, and USDC is Circle testnet USDC (`CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA`, from the [Circle faucet](https://faucet.circle.com)). Mainnet (Tranche 3) will use Circle's mainnet USDC. The DeFindex vault address is operator-supplied — Nectar does not deploy or own it.
 :::
 
 ## Roles and permissions
